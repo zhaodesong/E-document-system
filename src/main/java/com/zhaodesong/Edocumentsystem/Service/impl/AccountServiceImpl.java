@@ -6,6 +6,10 @@ import com.zhaodesong.Edocumentsystem.mapper.AccountDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+/**
+ * @author ZhaoDesong
+ * @date 2019-3-12 17:20
+ */
 @Service
 public class AccountServiceImpl implements AccountService {
     @Autowired
