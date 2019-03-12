@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
  * @date 2019-3-12 17:20
  */
 @Repository
-public interface TeamAccountDAO extends MyBatisBaseDao<TeamAccount, Long> {
+public interface TeamAccountDao extends MyBatisBaseDao<TeamAccount, Long> {
 }
