@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.zhaodesong.Edocumentsystem.mapper.AccountDao">
+
+    <resultMap id="Account" type="com.zhaodesong.Edocumentsystem.po.Account">
+        <result property="id" column="id"/>
+        <result property="mail" column="mail"/>
+        <result property="password" column="password"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="verifyFlag" column="verify_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+        id ,mail ,password ,nick_name ,verify_flag ,create_time ,update_time 
+	    ]]>
+	</sql>
+	
+    <insert id="insert"  useGeneratedKeys="true" keyProperty="id"  >
+    <![CDATA[
+        INSERT INTO account (
+	        id  ,
+	        mail  ,
+	        password  ,
+	        nick_name  ,
+	        verify_flag  ,
+	        create_time  ,
+	        update_time  
+        ) VALUES (
+        	#{id, jdbcType=BIGINT} ,
+        	#{mail, jdbcType=VARCHAR} ,
+        	#{password, jdbcType=CHAR} ,
+        	#{nickName, jdbcType=VARCHAR} ,
+        	#{verifyFlag, jdbcType=BIT} ,
+        	#{createTime, jdbcType=TIMESTAMP} ,
+        	#{updateTime, jdbcType=TIMESTAMP} 
+        )
+    ]]>
+    </insert>
+
+	<insert id="insertNotNull"  useGeneratedKeys="true" keyProperty="id"  >
+			<![CDATA[
+			INSERT INTO account (
+				<if test="null!=id">
+					id  ,
+				</if>
+				<if test="null!=mail">
+					mail  ,
+				</if>
+				<if test="null!=password">
+					password  ,
+				</if>
+				<if test="null!=nickName">
+					nick_name  ,
+				</if>
+				<if test="null!=verifyFlag">
+					verify_flag  ,
+				</if>
+				<if test="null!=createTime">
+					create_time  ,
+				</if>
+				<if test="null!=updateTime">
+					update_time  
+				</if>
+			) VALUES (
+				<if test="null!=id">
+					#{id, jdbcType=BIGINT} ,
+				</if>
+				<if test="null!=mail">
+					#{mail, jdbcType=VARCHAR} ,
+				</if>
+				<if test="null!=password">
+					#{password, jdbcType=CHAR} ,
+				</if>
+				<if test="null!=nickName">
+					#{nickName, jdbcType=VARCHAR} ,
+				</if>
+				<if test="null!=verifyFlag">
+					#{verifyFlag, jdbcType=BIT} ,
+				</if>
+				<if test="null!=createTime">
+					#{createTime, jdbcType=TIMESTAMP} ,
+				</if>
+				<if test="null!=updateTime">
+					#{updateTime, jdbcType=TIMESTAMP} 
+				</if>
+			)
+		]]>
+	</insert>
+
+   <insert id="insertBatch"   parameterType="java.util.List">
+      INSERT INTO account ( <include refid="columns"/>) values
+        <foreach collection="list" item="item" separator="," >
+    (
+        	#{item.id, jdbcType=BIGINT} ,
+        	#{item.mail, jdbcType=VARCHAR} ,
+        	#{item.password, jdbcType=CHAR} ,
+        	#{item.nickName, jdbcType=VARCHAR} ,
+        	#{item.verifyFlag, jdbcType=BIT} ,
+        	#{item.createTime, jdbcType=TIMESTAMP} ,
+        	#{item.updateTime, jdbcType=TIMESTAMP} 
+    )
+        </foreach>
+    </insert>
+
+    <update id="update" >
+    <![CDATA[
+        UPDATE account SET
+	        mail = #{mail, jdbcType=VARCHAR} ,
+	        password = #{password, jdbcType=CHAR} ,
+	        nick_name = #{nickName, jdbcType=VARCHAR} ,
+	        verify_flag = #{verifyFlag, jdbcType=BIT} ,
+	        create_time = #{createTime, jdbcType=TIMESTAMP} ,
+	        update_time = #{updateTime, jdbcType=TIMESTAMP} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+    </update>
+
+	<update id="updateNotNull" >
+			UPDATE account
+				<set>
+					<if test="null!=mail and ''!=mail ">
+						mail = #{mail, jdbcType=VARCHAR} ,
+					</if>
+
+					<if test="null!=password and ''!=password ">
+						password = #{password, jdbcType=CHAR} ,
+					</if>
+
+					<if test="null!=nickName and ''!=nickName ">
+						nick_name = #{nickName, jdbcType=VARCHAR} ,
+					</if>
+
+					<if test="null!=verifyFlag and ''!=verifyFlag ">
+						verify_flag = #{verifyFlag, jdbcType=BIT} ,
+					</if>
+
+					<if test="null!=createTime and ''!=createTime ">
+						create_time = #{createTime, jdbcType=TIMESTAMP} ,
+					</if>
+
+					<if test="null!=updateTime and ''!=updateTime ">
+						update_time = #{updateTime, jdbcType=TIMESTAMP} 
+					</if>
+
+				</set>
+			WHERE
+				id = #{id} 
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM account WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="getById" resultMap="Account">
+	    SELECT <include refid="columns"/>
+	    <![CDATA[
+	        FROM account 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+	<sql id="findWhere">
+	    <where>
+	    	<choose>
+	    		<when test="queryType==0">
+			       	<if test="null!=mail and ''!=mail ">
+	   			 		AND mail = #{mail}
+	   			   	</if>
+			       	<if test="null!=password and ''!=password ">
+	   			 		AND password = #{password}
+	   			   	</if>
+			       	<if test="null!=nickName and ''!=nickName ">
+	   			 		AND nick_name = #{nickName}
+	   			   	</if>
+	       		</when>
+	       		<otherwise>
+				    <if test="null!=mail and ''!=mail">
+				    <!-- 	AND mail LIKE '%'||#{mail}||'%' oracle -->
+			   			AND mail LIKE concat('%',#{mail},'%')
+			   			
+			   		</if>
+				    <if test="null!=password and ''!=password">
+				    <!-- 	AND password LIKE '%'||#{password}||'%' oracle -->
+			   			AND password LIKE concat('%',#{password},'%')
+			   			
+			   		</if>
+				    <if test="null!=nickName and ''!=nickName">
+				    <!-- 	AND nick_name LIKE '%'||#{nickName}||'%' oracle -->
+			   			AND nick_name LIKE concat('%',#{nickName},'%')
+			   			
+			   		</if>
+		        </otherwise>
+	      	</choose>
+		   	<if test="null!=id and ''!=id">
+			    AND id = #{id}
+			</if>
+		   	<if test="null!=verifyFlag and ''!=verifyFlag">
+			    AND verify_flag = #{verifyFlag}
+			</if>
+		   	<if test="null!=createTimeBegin and ''!=createTimeBegin">
+		   		AND create_time >= #{createTimeBegin}
+		   	</if>
+		   	<if test="null!=createTimeEnd and ''!=createTimeEnd">
+		   		AND create_time &lt; #{createTimeEnd}
+		   	</if>
+		   	<if test="null!=updateTimeBegin and ''!=updateTimeBegin">
+		   		AND update_time >= #{updateTimeBegin}
+		   	</if>
+		   	<if test="null!=updateTimeEnd and ''!=updateTimeEnd">
+		   		AND update_time &lt; #{updateTimeEnd}
+		   	</if>
+	    </where>
+	</sql>
+	 
+    <select id="findPageCount" resultType="long">
+        SELECT count(*) FROM account <include refid="findWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 #offset#,#pageSize#,#lastRows# 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findPage" resultMap="Account">
+    	SELECT <include refid="columns"/> FROM account 
+		<include refid="findWhere"/>
+		<if test="null!=sortColumns and ''!=sortColumns">
+			ORDER BY ${sortColumns}
+		</if>
+    </select>
+
+	
+	<select id="find" resultMap="Account">
+	    SELECT <include refid="columns"/> FROM account 
+		<include refid="findWhere"/>
+		<if test="null!=sortColumns">
+			ORDER BY ${sortColumns}
+		</if>
+    </select>
+	
+</mapper>

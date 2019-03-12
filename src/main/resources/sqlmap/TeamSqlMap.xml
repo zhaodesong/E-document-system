@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Team">
+
+    <resultMap id="Team" type="com.zhaodesong.Edocumentsystem.po.Team">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="createAccount" column="create_account"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+        id ,name ,create_account ,create_time ,update_time 
+	    ]]>
+	</sql>
+	
+    <insert id="insert"  useGeneratedKeys="true" keyProperty="id"  >
+    <![CDATA[
+        INSERT INTO team (
+	        id  ,
+	        name  ,
+	        create_account  ,
+	        create_time  ,
+	        update_time  
+        ) VALUES (
+        	#{id, jdbcType=INTEGER} ,
+        	#{name, jdbcType=VARCHAR} ,
+        	#{createAccount, jdbcType=INTEGER} ,
+        	#{createTime, jdbcType=TIMESTAMP} ,
+        	#{updateTime, jdbcType=TIMESTAMP} 
+        )
+    ]]>
+    </insert>
+
+	<insert id="insertNotNull"  useGeneratedKeys="true" keyProperty="id"  >
+			<![CDATA[
+			INSERT INTO team (
+				<if test="null!=id">
+					id  ,
+				</if>
+				<if test="null!=name">
+					name  ,
+				</if>
+				<if test="null!=createAccount">
+					create_account  ,
+				</if>
+				<if test="null!=createTime">
+					create_time  ,
+				</if>
+				<if test="null!=updateTime">
+					update_time  
+				</if>
+			) VALUES (
+				<if test="null!=id">
+					#{id, jdbcType=INTEGER} ,
+				</if>
+				<if test="null!=name">
+					#{name, jdbcType=VARCHAR} ,
+				</if>
+				<if test="null!=createAccount">
+					#{createAccount, jdbcType=INTEGER} ,
+				</if>
+				<if test="null!=createTime">
+					#{createTime, jdbcType=TIMESTAMP} ,
+				</if>
+				<if test="null!=updateTime">
+					#{updateTime, jdbcType=TIMESTAMP} 
+				</if>
+			)
+		]]>
+	</insert>
+
+   <insert id="insertBatch"   parameterType="java.util.List">
+      INSERT INTO team ( <include refid="columns"/>) values
+        <foreach collection="list" item="item" separator="," >
+    (
+        	#{item.id, jdbcType=INTEGER} ,
+        	#{item.name, jdbcType=VARCHAR} ,
+        	#{item.createAccount, jdbcType=INTEGER} ,
+        	#{item.createTime, jdbcType=TIMESTAMP} ,
+        	#{item.updateTime, jdbcType=TIMESTAMP} 
+    )
+        </foreach>
+    </insert>
+
+    <update id="update" >
+    <![CDATA[
+        UPDATE team SET
+	        name = #{name, jdbcType=VARCHAR} ,
+	        create_account = #{createAccount, jdbcType=INTEGER} ,
+	        create_time = #{createTime, jdbcType=TIMESTAMP} ,
+	        update_time = #{updateTime, jdbcType=TIMESTAMP} 
+        WHERE 
+	        id = #{id} 
+    ]]>
+    </update>
+
+	<update id="updateNotNull" >
+			UPDATE team
+				<set>
+					<if test="null!=name and ''!=name ">
+						name = #{name, jdbcType=VARCHAR} ,
+					</if>
+
+					<if test="null!=createAccount">
+						create_account = #{createAccount, jdbcType=INTEGER} ,
+					</if>
+
+					<if test="null!=createTime and ''!=createTime ">
+						create_time = #{createTime, jdbcType=TIMESTAMP} ,
+					</if>
+
+					<if test="null!=updateTime and ''!=updateTime ">
+						update_time = #{updateTime, jdbcType=TIMESTAMP} 
+					</if>
+
+				</set>
+			WHERE
+				id = #{id} 
+	</update>
+
+    <delete id="delete">
+    <![CDATA[
+        DELETE FROM team WHERE
+        id = #{id} 
+    ]]>
+    </delete>
+    
+    <select id="getById" resultMap="Team">
+	    SELECT <include refid="columns"/>
+	    <![CDATA[
+	        FROM team 
+	        WHERE 
+		        id = #{id} 
+	    ]]>
+    </select>
+
+	<sql id="findWhere">
+	    <where>
+	    	<choose>
+	    		<when test="queryType==0">
+			       	<if test="null!=name and ''!=name ">
+	   			 		AND name = #{name}
+	   			   	</if>
+	       		</when>
+	       		<otherwise>
+				    <if test="null!=name and ''!=name">
+				    <!-- 	AND name LIKE '%'||#{name}||'%' oracle -->
+			   			AND name LIKE concat('%',#{name},'%')
+			   			
+			   		</if>
+		        </otherwise>
+	      	</choose>
+		   	<if test="null!=id and ''!=id">
+			    AND id = #{id}
+			</if>
+			<if test="null!=createAccount">
+				AND create_account = #{createAccount}
+			</if>
+		   	<if test="null!=createTimeBegin and ''!=createTimeBegin">
+		   		AND create_time >= #{createTimeBegin}
+		   	</if>
+		   	<if test="null!=createTimeEnd and ''!=createTimeEnd">
+		   		AND create_time &lt; #{createTimeEnd}
+		   	</if>
+		   	<if test="null!=updateTimeBegin and ''!=updateTimeBegin">
+		   		AND update_time >= #{updateTimeBegin}
+		   	</if>
+		   	<if test="null!=updateTimeEnd and ''!=updateTimeEnd">
+		   		AND update_time &lt; #{updateTimeEnd}
+		   	</if>
+	    </where>
+	</sql>
+	 
+    <select id="findPageCount" resultType="long">
+        SELECT count(*) FROM team <include refid="findWhere"/>    
+    </select>
+    
+    <!--
+    	分页查询已经使用Dialect进行分页,也可以不使用Dialect直接编写分页
+    	因为分页查询将传 #offset#,#pageSize#,#lastRows# 三个参数,不同的数据库可以根于此三个参数属性应用不同的分页实现
+    -->
+    <select id="findPage" resultMap="Team">
+    	SELECT <include refid="columns"/> FROM team 
+		<include refid="findWhere"/>
+		<if test="null!=sortColumns and ''!=sortColumns">
+			ORDER BY ${sortColumns}
+		</if>
+    </select>
+
+	
+	<select id="find" resultMap="Team">
+	    SELECT <include refid="columns"/> FROM team 
+		<include refid="findWhere"/>
+		<if test="null!=sortColumns">
+			ORDER BY ${sortColumns}
+		</if>
+    </select>
+	
+</mapper>
