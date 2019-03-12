@@ -4,7 +4,8 @@ import com.zhaodesong.Edocumentsystem.po.Document;
 import org.springframework.stereotype.Repository;
 
 /**
- * DocumentDAO继承基类
+ * @author ZhaoDesong
+ * @date 2019-3-12 17:20
  */
 @Repository
 public interface DocumentDAO extends MyBatisBaseDao<Document, Long> {
