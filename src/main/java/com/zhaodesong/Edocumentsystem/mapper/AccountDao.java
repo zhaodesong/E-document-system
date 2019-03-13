@@ -1,5 +1,6 @@
 package com.zhaodesong.Edocumentsystem.mapper;
 
+import com.zhaodesong.Edocumentsystem.base.MyBatisBaseDao;
 import com.zhaodesong.Edocumentsystem.po.Account;
 import org.springframework.stereotype.Repository;
 
