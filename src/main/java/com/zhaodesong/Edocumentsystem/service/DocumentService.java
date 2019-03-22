@@ -1,4 +1,4 @@
-package com.zhaodesong.Edocumentsystem.Service;
+package com.zhaodesong.Edocumentsystem.service;
 
 /**
  * @author ZhaoDesong

@@ -1,4 +1,4 @@
-package com.zhaodesong.Edocumentsystem.Service;
+package com.zhaodesong.Edocumentsystem.service;
 
 import com.zhaodesong.Edocumentsystem.po.Account;
 
@@ -8,4 +8,6 @@ import com.zhaodesong.Edocumentsystem.po.Account;
  */
 public interface AccountService {
     Account getById(Long id);
+
+    boolean loginCheck(Account account);
 }

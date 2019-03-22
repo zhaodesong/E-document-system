@@ -1,6 +1,6 @@
-package com.zhaodesong.Edocumentsystem.Service.impl;
+package com.zhaodesong.Edocumentsystem.service.impl;
 
-import com.zhaodesong.Edocumentsystem.Service.DocumentService;
+import com.zhaodesong.Edocumentsystem.service.DocumentService;
 import org.springframework.stereotype.Service;
 
 /**

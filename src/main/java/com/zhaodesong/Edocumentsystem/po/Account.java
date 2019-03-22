@@ -3,7 +3,7 @@ package com.zhaodesong.Edocumentsystem.po;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author ZhaoDesong
@@ -11,7 +11,8 @@ import java.util.Date;
  */
 @Data
 public class Account implements Serializable {
-    private static final long serialVersionUID = 1L;
+
+    private static final long serialVersionUID = 4553617236020412455L;
 
     private Long id;
 
@@ -23,8 +24,8 @@ public class Account implements Serializable {
 
     private Boolean verifyFlag;
 
-    private Date createTime;
+    private LocalDateTime createTime;
 
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 }

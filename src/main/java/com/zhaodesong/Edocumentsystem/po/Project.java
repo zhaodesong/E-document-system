@@ -3,15 +3,16 @@ package com.zhaodesong.Edocumentsystem.po;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author ZhaoDesong
  * @date 2019-3-12 17:20
  */
 @Data
-public class Team implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class Project implements Serializable {
+
+    private static final long serialVersionUID = -3117496415378218683L;
 
     private Integer id;
 
@@ -19,9 +20,9 @@ public class Team implements Serializable {
 
     private Integer createAccount;
 
-    private Date createTime;
+    private LocalDateTime createTime;
 
-    private Date updateTime;
+    private LocalDateTime updateTime;
 
 
 }

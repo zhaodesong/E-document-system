@@ -1,6 +1,6 @@
 package com.zhaodesong.Edocumentsystem;
 
-import com.zhaodesong.Edocumentsystem.Service.AccountService;
+import com.zhaodesong.Edocumentsystem.service.AccountService;
 import com.zhaodesong.Edocumentsystem.po.Account;
 import org.junit.Assert;
 import org.junit.Test;
@@ -8,6 +8,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.DigestUtils;
+
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -22,4 +25,6 @@ public class ApplicationTests {
 		System.out.println(account);
 		Assert.assertEquals(id,account.getId());
 	}
+
+
 }
