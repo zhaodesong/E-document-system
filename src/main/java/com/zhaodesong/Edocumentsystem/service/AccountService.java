@@ -1,6 +1,7 @@
 package com.zhaodesong.Edocumentsystem.service;
 
 import com.zhaodesong.Edocumentsystem.po.Account;
+import com.zhaodesong.Edocumentsystem.query.AccountQuery;
 
 /**
  * @author ZhaoDesong
@@ -9,5 +10,11 @@ import com.zhaodesong.Edocumentsystem.po.Account;
 public interface AccountService {
     Account getById(Long id);
 
-    boolean loginCheck(Account account);
+    boolean loginCheck(AccountQuery account);
+
+    int insert(Account account);
+
+    int deleteById(Long id);
+
+    int updateById(Account account);
 }
