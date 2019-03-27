@@ -4,6 +4,7 @@ import com.zhaodesong.Edocumentsystem.query.AccountQuery;
 import com.zhaodesong.Edocumentsystem.service.AccountService;
 import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.dao.AccountDao;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,10 +16,10 @@ import java.util.List;
  * @date 2019-3-12 17:20
  */
 @Service
+@Slf4j
 public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountDao accountDao;
-
 
     @Override
     public Account getById(Long id) {
@@ -43,6 +44,7 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public int updateById(Account account) {
+        log.debug("调用updateById函数，参数account={}",account);
         return accountDao.updateById(account);
     }
 }

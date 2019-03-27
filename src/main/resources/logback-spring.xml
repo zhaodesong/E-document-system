@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--定义一个将日志输出到控制台的appender，名称为STDOUT -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%contextName]%date [%logger][%thread %line] %level >> %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <!--定义一个将日志输出到文件的appender，名称为FILE_LOG -->
+    <appender name="FILE_LOG" class="ch.qos.logback.core.FileAppender">
+        <file>D:/test.log</file>
+        <append>true</append>
+        <encoder>
+            <pattern>[log]%date [%logger][%thread %line] %level >> %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- 异步写入日志 -->
+    <appender name ="ASYNC" class= "ch.qos.logback.classic.AsyncAppender">
+        <!-- 不丢失日志.默认的,如果队列的80%已满,则会丢弃TRACT、DEBUG、INFO级别的日志 -->
+        <discardingThreshold >0</discardingThreshold>
+        <!-- 更改默认的队列的深度,该值会影响性能.默认值为256 -->
+        <queueSize>512</queueSize>
+        <!-- 添加附加的appender,最多只能添加一个 -->
+        <appender-ref ref ="FILE_LOG"/>
+    </appender>
+
+
+    <!-- 指定name包下的日志打印级别为DEBUG -->
+    <logger name="com.zhaodesong.Edocumentsystem" level="DEBUG">
+        <appender-ref ref="FILE_LOG" />
+    </logger>
+
+    <!-- 指定生产环境基础的日志输出级别为INFO，并且绑定了名为ASYNC的appender，表示将日志信息异步输出到文件 -->
+    <springProfile  name="prod">
+        <root level="INFO">
+            <appender-ref ref="ASYNC" />
+        </root>
+    </springProfile>
+</configuration>
