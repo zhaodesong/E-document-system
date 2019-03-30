@@ -12,6 +12,8 @@ public interface AccountService {
 
     boolean loginCheck(AccountQuery account);
 
+    boolean mailRepeatCheck(AccountQuery account);
+
     int insert(Account account);
 
     int deleteById(Long id);
