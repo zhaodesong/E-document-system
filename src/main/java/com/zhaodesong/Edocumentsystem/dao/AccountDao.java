@@ -31,7 +31,7 @@ public interface AccountDao {
             + "</script>")
     List<Account> findNotNull(AccountQuery account);
 
-    @Insert("INSERT INTO account(id,mail,password,nick_name,verify_flag,create_time) VALUES (#{id}, #{mail}, #{password}, #{nickName}, #{verifyFlag}, #{createTime})")
+    @Insert("INSERT INTO account(id,mail,password,nick_name,verify_flag,create_time,update_time) VALUES (#{id}, #{mail}, #{password}, #{nickName}, #{verifyFlag}, #{createTime}, #{createTime})")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
     int insert(Account account);
 
