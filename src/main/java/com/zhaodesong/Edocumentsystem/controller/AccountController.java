@@ -1,11 +1,11 @@
 package com.zhaodesong.Edocumentsystem.controller;
 
-import com.alibaba.druid.support.json.JSONUtils;
-import com.zhaodesong.Edocumentsystem.base.ResultCodeEnum;
 import com.zhaodesong.Edocumentsystem.base.ResultDTO;
 import com.zhaodesong.Edocumentsystem.po.Account;
+import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.query.AccountQuery;
 import com.zhaodesong.Edocumentsystem.service.AccountService;
+import com.zhaodesong.Edocumentsystem.service.ProjectService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,67 +14,78 @@ import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 @Slf4j
 public class AccountController {
     @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
     private AccountService accountService;
+    @Autowired
+    private ProjectService projectService;
+
+
+    @RequestMapping(value = "/")
+    public String index() {
+        return "index";
+    }
+
+    @RequestMapping(value = "/toRegister")
+    public String toRegister() {
+        return "Register";
+    }
 
     @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResultDTO login(String data) {
+    public String login() {
         ResultDTO result = new ResultDTO();
-        if (StringUtils.isEmpty(data)) {
-            result.setCode(ResultCodeEnum.PARM_NULL.getCode());
-            result.setMessage(ResultCodeEnum.PARM_NULL.getMessage());
-        }
+        String mail = request.getParameter("mail");
+        String password = request.getParameter("password");
 
-        Map<String, Object> map = (Map<String, Object>) JSONUtils.parse(data);
-        String mail = (String) map.get("mail");
-        String password = (String) map.get("password");
         if (StringUtils.isEmpty(mail) || StringUtils.isEmpty(password)) {
-            result.setCode(ResultCodeEnum.PARM_UNCOMPLETE.getCode());
-            result.setMessage(ResultCodeEnum.PARM_UNCOMPLETE.getMessage());
+            request.setAttribute("msg", "输入不能为空，请重新输入");
+            return "index";
         }
 
         AccountQuery query = new AccountQuery();
         query.setMail(mail);
         query.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
-        if (accountService.loginCheck(query)) {
-            result.setCode(ResultCodeEnum.LOGIN_SUCCESS.getCode());
-            result.setMessage(ResultCodeEnum.LOGIN_SUCCESS.getMessage());
-            return result;
+        Account account = accountService.login(query);
+        if (account != null) {
+            request.setAttribute("id", account.getId());
+            request.setAttribute("mail", mail);
+            request.setAttribute("nickName", account.getNickName());
+
+            // 查询该用户的项目信息
+            List<Project> projectList = projectService
+            return "Account";
+        } else {
+            request.setAttribute("msg", "邮箱或密码错误");
+            return "index";
         }
-        result.setCode(ResultCodeEnum.LOGIN_FAIL.getCode());
-        result.setMessage(ResultCodeEnum.LOGIN_FAIL.getMessage());
-        return result;
     }
 
-    @RequestMapping(value = "/login", method = RequestMethod.POST)
-    public ResultDTO register(String data) {
+    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    public String register() {
         ResultDTO result = new ResultDTO();
-        if (StringUtils.isEmpty(data)) {
-            result.setCode(ResultCodeEnum.PARM_NULL.getCode());
-            result.setMessage(ResultCodeEnum.PARM_NULL.getMessage());
-        }
+        String mail = request.getParameter("mail");
+        String password = request.getParameter("password");
+        String nickName = request.getParameter("nickName");
 
-        Map<String, Object> map = (Map<String, Object>) JSONUtils.parse(data);
-        String mail = (String) map.get("mail");
-        String password = (String) map.get("password");
-        String nickName = (String) map.get("nickName");
         if (StringUtils.isEmpty(mail) || StringUtils.isEmpty(password)
                 || StringUtils.isEmpty(nickName)) {
-            result.setCode(ResultCodeEnum.PARM_UNCOMPLETE.getCode());
-            result.setMessage(ResultCodeEnum.PARM_UNCOMPLETE.getMessage());
+            request.setAttribute("msg", "输入不能为空，请重新输入");
+            return "Register";
         }
         // 验证该邮箱是否已被注册
         AccountQuery query = new AccountQuery();
         query.setMail(mail);
         if (accountService.mailRepeatCheck(query)) {
-            result.setCode(ResultCodeEnum.REGISTER_FAIL_MAIL.getCode());
-            result.setMessage(ResultCodeEnum.REGISTER_FAIL_MAIL.getMessage());
-            return result;
+            request.setAttribute("msg", "该邮箱已注册");
+            return "Register";
         }
 
         Account account = new Account();
@@ -84,12 +95,10 @@ public class AccountController {
         account.setVerifyFlag(false);
 
         if (accountService.insert(account) == 1) {
-            result.setCode(ResultCodeEnum.REGISTER_SUCCESS.getCode());
-            result.setMessage(ResultCodeEnum.REGISTER_SUCCESS.getMessage());
-            return result;
+            request.setAttribute("msg", "注册成功,请登录");
+            return "index";
         }
-        result.setCode(ResultCodeEnum.REGISTER_FAIL.getCode());
-        result.setMessage(ResultCodeEnum.REGISTER_FAIL.getMessage());
-        return result;
+        request.setAttribute("msg", "注册失败,请稍后重试");
+        return "Register";
     }
 }

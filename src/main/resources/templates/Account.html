@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>流云文档-欢迎使用</title>
+</head>
+<body>
+    <div>
+        <div>
+            欢迎您，
+            <p th:text="${nickName}"></p>
+        </div>
+        <div th:text="${msg}" th:if="${not #strings.isEmpty(msg)}">
+
+        </div>
+
+    </div>
+</body>
+</html>

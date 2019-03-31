@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -26,9 +27,12 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public boolean loginCheck(AccountQuery account) {
+    public Account login(AccountQuery account) {
         List<Account> accountList = accountDao.findNotNull(account);
-        return !accountList.isEmpty();
+        if (accountList == null || accountList.size() == 0) {
+            return null;
+        }
+        return accountList.get(0);
     }
 
     @Override
@@ -39,6 +43,9 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public int insert(Account account) {
+        LocalDateTime now = LocalDateTime.now();
+        account.setCreateTime(now);
+        account.setUpdateTime(now);
         return accountDao.insert(account);
     }
 
@@ -49,7 +56,8 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public int updateById(Account account) {
-        log.debug("调用updateById函数，参数account={}", account);
+        //log.debug("调用updateById函数，参数account={}", account);
+        account.setUpdateTime(LocalDateTime.now());
         return accountDao.updateById(account);
     }
 }

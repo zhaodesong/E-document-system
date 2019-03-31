@@ -17,7 +17,7 @@ repositories {
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+//	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.0.0'
@@ -33,6 +33,7 @@ dependencies {
 
 	//热部署
 	compile 'org.springframework.boot:spring-boot-devtools'
+	compile('org.springframework.boot:spring-boot-starter-tomcat')
 
 	compile group: 'com.github.pagehelper', name: 'pagehelper-spring-boot-starter', version: '1.2.10'
 
@@ -40,6 +41,4 @@ dependencies {
 
 	// 引入fastjson依赖
 	compile group: 'com.alibaba', name: 'fastjson', version: '1.2.56'
-
-
 }

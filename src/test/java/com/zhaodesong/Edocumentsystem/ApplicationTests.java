@@ -34,15 +34,7 @@ public class ApplicationTests {
 		Assert.assertEquals(id,account.getId());
 	}
 
-	@Test
-	public void testloginCheck() {
-		AccountQuery account = new AccountQuery();
-		account.setMail("zhaodesong@gmail.com");
-		account.setPassword("C4CA4238A0B923820DCC509A6F75849B");
-		account.setVerifyFlag(true);
 
-		Assert.assertTrue(accountService.loginCheck(account));
-	}
 
 	@Test
 	public void testInsert() {

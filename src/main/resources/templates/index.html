@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>流云文档</title>
+</head>
+<body>
+<div id="loginForm">
+    <form action="/login" method="post">
+        <p style="color:red;" th:text="${msg}" th:if="${not #strings.isEmpty(msg)}"></p>
+        <input class="form-control inputText" type="text" name="mail" placeholder="账号"/><br/>
+        <input class="form-control inputText" type="password" name="password" placeholder="密码"/><br/>
+        <input class="button" type="submit" value="登录"/>
+        <input class="button" type="reset" value="重置"/>
+        <a id="wjPwd" href="javascript:alert('请与管理员联系重置密码!');">忘记密码?</a>
+        <br/>
+        <a href="/toRegister">点击注册</a>
+    </form>
+</div>
+</body>
+</html>

@@ -10,7 +10,7 @@ import com.zhaodesong.Edocumentsystem.query.AccountQuery;
 public interface AccountService {
     Account getById(Long id);
 
-    boolean loginCheck(AccountQuery account);
+    Account login(AccountQuery account);
 
     boolean mailRepeatCheck(AccountQuery account);
 
