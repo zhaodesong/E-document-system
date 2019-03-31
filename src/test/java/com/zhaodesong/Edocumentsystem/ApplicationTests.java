@@ -67,14 +67,4 @@ public class ApplicationTests {
 		int success = accountService.deleteById(8L);
 		Assert.assertEquals(1,success);
 	}
-
-	@Test
-	public void testJson() {
-		String data = "{}";
-		Map<String, Object> map = (Map<String, Object>) JSONUtils.parse(data);
-		System.out.println(map==null);
-		Assert.assertEquals(false,map==null);
-	}
-
-
 }

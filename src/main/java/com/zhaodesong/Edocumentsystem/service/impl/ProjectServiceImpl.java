@@ -1,7 +1,13 @@
 package com.zhaodesong.Edocumentsystem.service.impl;
 
+import com.zhaodesong.Edocumentsystem.dao.ProjectDao;
+import com.zhaodesong.Edocumentsystem.po.Project;
+import com.zhaodesong.Edocumentsystem.query.ProjectQuery;
 import com.zhaodesong.Edocumentsystem.service.ProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author ZhaoDesong
@@ -9,4 +15,21 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class ProjectServiceImpl implements ProjectService {
+    @Autowired
+    private ProjectDao projectDao;
+
+    @Override
+    public List<Project> getProjectNotNull(ProjectQuery project) {
+        return projectDao.findNotNull(project);
+    }
+
+    @Override
+    public int insert(Project project) {
+        return projectDao.insert(project);
+    }
+
+    @Override
+    public int deleteById(int id) {
+        return projectDao.deleteById(id);
+    }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>流云文档</title>
@@ -7,7 +7,7 @@
 <body>
 <div id="loginForm">
     <form action="/login" method="post">
-        <p style="color:red;" th:text="${msg}" th:if="${not #strings.isEmpty(msg)}"></p>
+        <p style="color:red;" >${msg!}</p>
         <input class="form-control inputText" type="text" name="mail" placeholder="账号"/><br/>
         <input class="form-control inputText" type="password" name="password" placeholder="密码"/><br/>
         <input class="button" type="submit" value="登录"/>

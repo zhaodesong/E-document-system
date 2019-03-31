@@ -2,6 +2,7 @@ package com.zhaodesong.Edocumentsystem.service;
 
 import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.query.AccountQuery;
+import org.springframework.cache.annotation.Cacheable;
 
 /**
  * @author ZhaoDesong

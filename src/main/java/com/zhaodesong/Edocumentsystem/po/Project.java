@@ -18,11 +18,10 @@ public class Project implements Serializable {
 
     private String name;
 
-    private Integer createAccount;
+    private Long createAccount;
 
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;
-
 
 }

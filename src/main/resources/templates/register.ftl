@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -7,14 +7,14 @@
 <body>
 <div id="loginForm">
     <form action="/register" method="post">
-        <p style="color:red;" th:text="${msg}" th:if="${not #strings.isEmpty(msg)}"></p>
+        <p style="color:red;" >${msg!}</p>
         <input class="form-control inputText" type="text" name="mail" placeholder="邮箱"/><br/>
         <input class="form-control inputText" type="password" name="password" placeholder="密码"/><br/>
         <input class="form-control inputText" type="password" name="password" placeholder="再次输入密码"/><br/>
         <input class="form-control inputText" type="text" name="nickName" placeholder="昵称"/><br/>
         <input class="button" type="submit" value="注册"/>
         <input class="button" type="reset" value="重置"/>
-        <a id="backLogin" href="index.html">返回登录</a>
+        <a id="backLogin" href="index">返回登录</a>
     </form>
 </div>
 </body>
