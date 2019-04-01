@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
@@ -40,7 +41,7 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/login")
-    public String login() {
+    public String login(HttpSession session) {
         String mail = request.getParameter("mail");
         String password = request.getParameter("password");
 
@@ -49,27 +50,32 @@ public class AccountController {
             return "index";
         }
 
-        AccountQuery accountQuery = new AccountQuery();
-        accountQuery.setMail(mail);
-        accountQuery.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
-        Account account = accountService.login(accountQuery);
-        if (account != null) {
-            request.setAttribute("accountId", account.getId());
-            request.setAttribute("mail", mail);
-            request.setAttribute("nickName", account.getNickName());
-
-            ProjectQuery projectQuery = new ProjectQuery();
-            projectQuery.setCreateAccount(account.getId());
-            // 查询该用户的项目信息
-            List<Project> projectList = projectService.getProjectNotNull(projectQuery);
-            if (projectList != null || projectList.size() == 0) {
-                request.setAttribute("project", projectList);
+        // 先进行缓存的登录检查
+        Account account = accountService.loginCheck(mail);
+        if (account == null) {
+            // 如果缓存为空，进行正常登录
+            AccountQuery accountQuery = new AccountQuery();
+            accountQuery.setMail(mail);
+            accountQuery.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+            account = accountService.login(accountQuery);
+            if (account == null) {
+                request.setAttribute("msg", "邮箱或密码错误");
+                return "index";
             }
-            return "login_success";
-        } else {
-            request.setAttribute("msg", "邮箱或密码错误");
-            return "index";
         }
+//        request.setAttribute("accountId", account.getId());
+//        request.setAttribute("mail", mail);
+        request.setAttribute("nickName", account.getNickName());
+        session.setAttribute("mail", mail);
+        session.setAttribute("accountId", account.getId());
+        ProjectQuery projectQuery = new ProjectQuery();
+        projectQuery.setCreateAccount(account.getId());
+        // 查询该用户的项目信息
+        List<Project> projectList = projectService.getProjectNotNull(projectQuery);
+        if (projectList != null || projectList.size() == 0) {
+            request.setAttribute("project", projectList);
+        }
+        return "login_success";
     }
 
     @RequestMapping(value = "/register", method = RequestMethod.POST)

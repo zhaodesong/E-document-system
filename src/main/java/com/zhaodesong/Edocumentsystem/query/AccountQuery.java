@@ -10,7 +10,7 @@ public class AccountQuery implements Serializable {
 
     private static final long serialVersionUID = -299385616037064830L;
 
-    private Long id;
+    private Integer id;
 
     private String mail;
 

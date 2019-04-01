@@ -14,7 +14,7 @@ public class Account implements Serializable {
 
     private static final long serialVersionUID = 4553617236020412455L;
 
-    private Long id;
+    private Integer id;
 
     private String mail;
 

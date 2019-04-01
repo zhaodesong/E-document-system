@@ -32,6 +32,14 @@
         <appender-ref ref="FILE_LOG" />
     </logger>
 
+
+    <!-- 指定生产环境基础的日志输出级别为INFO，并且绑定了名为ASYNC的appender，表示将日志信息异步输出到文件 -->
+    <springProfile  name="test">
+        <root level="INFO">
+            <appender-ref ref="STDOUT" />
+        </root>
+    </springProfile>
+
     <!-- 指定生产环境基础的日志输出级别为INFO，并且绑定了名为ASYNC的appender，表示将日志信息异步输出到文件 -->
     <springProfile  name="prod">
         <root level="INFO">

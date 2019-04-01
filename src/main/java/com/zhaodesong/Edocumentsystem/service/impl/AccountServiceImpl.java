@@ -22,7 +22,7 @@ public class AccountServiceImpl implements AccountService {
     private AccountDao accountDao;
 
     @Override
-    public Account getById(Long id) {
+    public Account getById(Integer id) {
         return accountDao.getById(id);
     }
 
@@ -33,6 +33,16 @@ public class AccountServiceImpl implements AccountService {
             return null;
         }
         return accountList.get(0);
+    }
+
+    @Override
+    public Account loginCheck(String mail) {
+        return null;
+    }
+
+    @Override
+    public int logout(String mail) {
+        return 0;
     }
 
     @Override
@@ -50,7 +60,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public int deleteById(Long id) {
+    public int deleteById(Integer id) {
         return accountDao.deleteById(id);
     }
 

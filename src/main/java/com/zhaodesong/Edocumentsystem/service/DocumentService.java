@@ -5,4 +5,5 @@ package com.zhaodesong.Edocumentsystem.service;
  * @date 2019-3-12 19:05
  */
 public interface DocumentService {
+    int deleteByProjectId(Integer projectId);
 }

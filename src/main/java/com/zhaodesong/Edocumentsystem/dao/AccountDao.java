@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface AccountDao {
     @Select("SELECT * FROM account WHERE id = #{id}")
-    Account getById(Long id);
+    Account getById(Integer id);
 
     @Select("<script>"
             + "SELECT * FROM account"
@@ -32,12 +32,12 @@ public interface AccountDao {
     List<Account> findNotNull(AccountQuery account);
 
     @Insert("INSERT INTO account(id,mail,password,nick_name,verify_flag,create_time,update_time) " +
-            "VALUES (#{id}, #{mail}, #{password}, #{nickName}, #{verifyFlag}, #{createTime}, #{createTime})")
+            "VALUES (#{id}, #{mail}, #{password}, #{nickName}, #{verifyFlag}, #{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
     int insert(Account account);
 
     @Delete("DELETE FROM account WHERE id = #{id}")
-    int deleteById(Long id);
+    int deleteById(Integer id);
 
     @Update("<script>"
             + "UPDATE account "

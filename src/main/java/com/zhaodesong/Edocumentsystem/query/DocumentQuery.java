@@ -10,7 +10,7 @@ public class DocumentQuery implements Serializable {
     private static final long serialVersionUID = -1731054131432638704L;
     private Long id;
 
-    private Integer teamId;
+    private Integer projectId;
 
     private String name;
 

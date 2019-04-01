@@ -16,7 +16,7 @@ public class ProjectAccount implements Serializable {
 
     private Long id;
 
-    private Integer teamId;
+    private Integer projectId;
 
     private Integer accountId;
 

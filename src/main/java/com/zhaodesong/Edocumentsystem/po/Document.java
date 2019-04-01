@@ -16,7 +16,7 @@ public class Document implements Serializable {
 
     private Long id;
 
-    private Integer teamId;
+    private Integer projectId;
 
     private String name;
 

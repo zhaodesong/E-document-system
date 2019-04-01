@@ -14,7 +14,7 @@ public class ProjectQuery implements Serializable {
 
     private String name;
 
-    private Long createAccount;
+    private Integer createAccount;
 
     private LocalDateTime createTimeStart;
 

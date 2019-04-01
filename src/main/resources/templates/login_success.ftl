@@ -7,16 +7,22 @@
 <body>
     <div>
         <div>
-            <span>欢迎您，${nickName}</span>
+            <span>欢迎您，${nickName!}</span>
         </div>
+        <#include "account.ftl" encoding="UTF-8" parse=true>
         <#if project?size=0>
             <p>您尚未加入任何项目</p>
         <#else>
             <#list project! as p>
-                <a href="/project">${p.name}</a>
+                <p>
+                    <a href="/project?pid=${p.id}">${p.name!}</a>
+                    <#--如果有权限，显示删除，否则显示退出-->
+                    <a href="/deleteProject?pid=${p.id}">删除该项目</a>
+                </p>
             </#list>
         </#if>
-        <a href="/newProject?id=${accountId}">创建新项目</a>
+        <br>
+        <a href="/newProject">创建新项目</a>
 
     </div>
 </body>

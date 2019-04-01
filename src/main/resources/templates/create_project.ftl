@@ -6,12 +6,13 @@
 </head>
 <body>
 <div id="loginForm">
-    <form action="/createProject?id={}" method="post">
+    <form action="/createProject" method="post">
         <p style="color:red;" >${msg!}</p>
-        <input class="form-control inputText" type="text" name="mail" placeholder="项目名称"/><br/>
-        <input class="button" type="submit" value="注册"/>
+        <input class="form-control inputText" type="text" name="projectName" placeholder="项目名称"/><br/>
+        <#include "account.ftl" encoding="UTF-8" parse=true>
+        <input class="button" type="submit" value="创建"/>
         <input class="button" type="reset" value="重置"/>
-        <a href=”#” onClick=”javascript :history.back(-1);”>返回</a>
+        <a href="" onClick=”javascript :history.back(-1);”>返回</a>
     </form>
 </div>
 </body>

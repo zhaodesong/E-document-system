@@ -14,7 +14,7 @@ import java.util.List;
 @Repository
 public interface ProjectDao {
     @Select("SELECT * FROM project WHERE id = #{id}")
-    Project getById(Long id);
+    Project getById(Integer id);
 
     @Select("<script>"
             + "SELECT * FROM project"
@@ -30,12 +30,12 @@ public interface ProjectDao {
     List<Project> findNotNull(ProjectQuery project);
 
     @Insert("INSERT INTO project(id,name,create_account,create_time,update_time) " +
-            "VALUES (#{id}, #{name}, #{create_account}, #{createTime},#{createTime})")
+            "VALUES (#{id}, #{name}, #{createAccount}, #{createTime},#{updateTime})")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
     int insert(Project project);
 
     @Delete("DELETE FROM project WHERE id = #{id}")
-    int deleteById(int id);
+    int deleteById(Integer id);
 
     @Update("<script>"
             + "UPDATE project "
