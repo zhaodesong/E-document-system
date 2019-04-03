@@ -13,16 +13,9 @@ import org.springframework.cache.annotation.Cacheable;
 public interface AccountService {
     Account getById(Integer id);
 
-    @CachePut(cacheNames = "accounts", key = "#account.mail")
     Account login(AccountQuery account);
 
-    @Cacheable(cacheNames = "accounts", key = "#mail")
-    Account loginCheck(String mail);
-
-    @CacheEvict(value = "accounts", key = "#mail")
     int logout(String mail);
-
-    boolean mailRepeatCheck(AccountQuery account);
 
     int insert(Account account);
 

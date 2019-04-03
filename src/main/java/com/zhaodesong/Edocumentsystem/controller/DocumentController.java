@@ -1,5 +1,6 @@
 package com.zhaodesong.Edocumentsystem.controller;
 
+import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Document;
 import com.zhaodesong.Edocumentsystem.service.DocumentService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +22,16 @@ import java.nio.file.Paths;
 
 @Controller
 @Slf4j
-public class DocumentController {
+public class DocumentController extends BaseController {
     private static String FOLDER = "D://temp//";
 
-    @Autowired
-    private HttpServletRequest request;
+
     @Autowired
     private DocumentService documentService;
 
     @RequestMapping("/upload")
     public String singleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes, HttpSession session) {
+                                   RedirectAttributes redirectAttributes) {
         Integer projectId = (Integer) session.getAttribute("projectId");
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "请选择要上传的文件");
@@ -40,7 +40,7 @@ public class DocumentController {
         try {
             // 向数据库中写入该文件的记录
             Document document = new Document();
-            document.setDocId(documentService.getMaxDocId()+1);
+            document.setDocId(documentService.getMaxDocId() + 1);
             document.setProjectId(projectId);
             document.setName(file.getOriginalFilename());
             document.setVersion(0);
@@ -66,7 +66,7 @@ public class DocumentController {
     }
 
     @RequestMapping("/download")
-    public void downloadFile(HttpServletResponse response, HttpSession session) throws UnsupportedEncodingException {
+    public void downloadFile(HttpServletResponse response) throws UnsupportedEncodingException {
         Integer projectId = (Integer) session.getAttribute("projectId");
         String documentId = request.getParameter("did");
         String documentVersion = request.getParameter("dver");
@@ -90,14 +90,9 @@ public class DocumentController {
                     os.write(buffer, 0, i);
                     i = bis.read(buffer);
                 }
-                //request.setAttribute("msg", "下载成功");
-                //return "redirect:/toProject?pid=" + projectId;
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-
-//        request.setAttribute("msg", "系统错误，下载失败，请稍后重试");
-//        return "redirect:/toProject?pid=" + projectId;
     }
 }

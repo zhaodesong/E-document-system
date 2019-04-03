@@ -1,5 +1,6 @@
 package com.zhaodesong.Edocumentsystem.controller;
 
+import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.query.AccountQuery;
@@ -20,10 +21,7 @@ import java.util.List;
 
 @Controller
 @Slf4j
-public class AccountController {
-    @Autowired
-    private HttpServletRequest request;
-
+public class AccountController extends BaseController {
     @Autowired
     private AccountService accountService;
     @Autowired
@@ -41,7 +39,7 @@ public class AccountController {
     }
 
     @RequestMapping(value = "/login")
-    public String login(HttpSession session) {
+    public String login() {
         String mail = request.getParameter("mail");
         String password = request.getParameter("password");
 
@@ -50,21 +48,15 @@ public class AccountController {
             return "index";
         }
 
-        // 先进行缓存的登录检查
-        Account account = accountService.loginCheck(mail);
+        AccountQuery accountQuery = new AccountQuery();
+        accountQuery.setMail(mail);
+        accountQuery.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+        Account account = accountService.login(accountQuery);
         if (account == null) {
-            // 如果缓存为空，进行正常登录
-            AccountQuery accountQuery = new AccountQuery();
-            accountQuery.setMail(mail);
-            accountQuery.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
-            account = accountService.login(accountQuery);
-            if (account == null) {
-                request.setAttribute("msg", "邮箱或密码错误");
-                return "index";
-            }
+            request.setAttribute("msg", "邮箱或密码错误");
+            return "index";
         }
-//        request.setAttribute("accountId", account.getId());
-//        request.setAttribute("mail", mail);
+
         request.setAttribute("nickName", account.getNickName());
         session.setAttribute("mail", mail);
         session.setAttribute("accountId", account.getId());
@@ -87,13 +79,6 @@ public class AccountController {
         if (StringUtils.isEmpty(mail) || StringUtils.isEmpty(password)
                 || StringUtils.isEmpty(nickName)) {
             request.setAttribute("msg", "输入不能为空，请重新输入");
-            return "register";
-        }
-        // 验证该邮箱是否已被注册
-        AccountQuery query = new AccountQuery();
-        query.setMail(mail);
-        if (accountService.mailRepeatCheck(query)) {
-            request.setAttribute("msg", "该邮箱已注册");
             return "register";
         }
 

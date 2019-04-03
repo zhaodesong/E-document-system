@@ -1,10 +1,10 @@
 package com.zhaodesong.Edocumentsystem.controller;
 
+import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.po.Document;
 import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.po.ProjectAccount;
-import com.zhaodesong.Edocumentsystem.query.AccountQuery;
 import com.zhaodesong.Edocumentsystem.query.DocumentQuery;
 import com.zhaodesong.Edocumentsystem.query.ProjectQuery;
 import com.zhaodesong.Edocumentsystem.service.AccountService;
@@ -16,20 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @Controller
 @Slf4j
-public class ProjectController {
+public class ProjectController extends BaseController {
     private static String FOLDER = "D://temp//";
-
-    @Autowired
-    private HttpServletRequest request;
 
     @Autowired
     private AccountService accountService;
@@ -46,14 +41,15 @@ public class ProjectController {
     }
 
     @RequestMapping(value = "/createProject")
-    public String createProject(HttpSession session) {
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        String mail = (String) session.getAttribute("mail");
-        Account account = accountService.loginCheck(mail);
-        if (account == null) {
-            request.setAttribute("msg", "登录已失效，请重新登录");
+    public String createProject() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
+
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        String mail = (String) session.getAttribute("mail");
+
         String name = request.getParameter("projectName");
 
         if (StringUtils.isEmpty(name)) {
@@ -89,7 +85,12 @@ public class ProjectController {
     TODO 未进行权限验证
      */
     @RequestMapping(value = "/deleteProject")
-    public String deleteProject(HttpSession session) {
+    public String deleteProject() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
+            return "index";
+        }
+
         int projectId = Integer.parseInt(request.getParameter("pid"));
         Integer accountId = (Integer) session.getAttribute("accountId");
         projectService.deleteById(projectId);
@@ -105,9 +106,12 @@ public class ProjectController {
     }
 
     @RequestMapping("/toProject")
-    public String project(HttpSession session) {
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        String mail = (String) session.getAttribute("mail");
+    public String project() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
+            return "index";
+        }
+
         Integer projectId = Integer.parseInt(request.getParameter("pid"));
 
         DocumentQuery query = new DocumentQuery();
@@ -121,7 +125,12 @@ public class ProjectController {
     }
 
     @RequestMapping("/toLoginSuccess")
-    public String toLoginSuccess(HttpSession session) {
+    public String toLoginSuccess() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
+            return "index";
+        }
+
         Integer accountId = (Integer) session.getAttribute("accountId");
 
         Account account = accountService.getById(accountId);

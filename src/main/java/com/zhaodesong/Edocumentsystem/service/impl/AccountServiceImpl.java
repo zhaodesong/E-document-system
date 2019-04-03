@@ -36,19 +36,8 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account loginCheck(String mail) {
-        return null;
-    }
-
-    @Override
     public int logout(String mail) {
         return 0;
-    }
-
-    @Override
-    public boolean mailRepeatCheck(AccountQuery account) {
-        List<Account> accountList = accountDao.findNotNull(account);
-        return !accountList.isEmpty();
     }
 
     @Override
