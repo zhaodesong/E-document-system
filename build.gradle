@@ -4,6 +4,7 @@ plugins {
 }
 
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'war'
 
 group = 'com.zhaodesong'
 version = '0.0.1-SNAPSHOT'
@@ -44,6 +45,6 @@ dependencies {
 
 	compile group: 'org.springframework.boot', name: 'spring-boot-starter-cache', version: '2.1.3.RELEASE'
 	compile group: 'org.ehcache', name: 'ehcache', version: '3.7.0'
-
+	compile fileTree(dir:'libs',include:['*.jar'])
 
 }

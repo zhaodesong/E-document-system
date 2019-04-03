@@ -16,13 +16,17 @@ public class Document implements Serializable {
 
     private Long id;
 
+    private Long docId;
+
     private Integer projectId;
 
     private String name;
 
     private Integer version;
 
-    private Integer accountId;
+    private Integer accountIdCreate;
+
+    private Integer accountIdModify;
 
     private Boolean type;
 

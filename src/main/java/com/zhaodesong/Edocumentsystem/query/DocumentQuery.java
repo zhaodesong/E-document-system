@@ -8,7 +8,10 @@ import java.time.LocalDateTime;
 @Data
 public class DocumentQuery implements Serializable {
     private static final long serialVersionUID = -1731054131432638704L;
+
     private Long id;
+
+    private Long docId;
 
     private Integer projectId;
 
@@ -16,7 +19,9 @@ public class DocumentQuery implements Serializable {
 
     private Integer version;
 
-    private Integer accountId;
+    private Integer accountIdCreate;
+
+    private Integer accountIdModify;
 
     private Boolean type;
 
