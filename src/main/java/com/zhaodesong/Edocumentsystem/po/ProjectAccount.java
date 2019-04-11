@@ -20,7 +20,7 @@ public class ProjectAccount implements Serializable {
 
     private Integer accountId;
 
-    private Byte permission;
+    private String permission;
 
     private LocalDateTime createTime;
 

@@ -32,4 +32,17 @@ public class ProjectServiceImpl implements ProjectService {
     public int deleteById(int id) {
         return projectDao.deleteById(id);
     }
+
+    @Override
+    public Project getProjectById(Integer id) {
+        return projectDao.getById(id);
+    }
+
+    @Override
+    public int renameProject(Integer projectId, String newName) {
+        Project project = new Project();
+        project.setId(projectId);
+        project.setName(newName);
+        return projectDao.updateById(project);
+    }
 }

@@ -22,4 +22,7 @@ public interface AccountService {
     int deleteById(Integer id);
 
     int updateById(Account account);
+
+    Account getByMail(String mail);
+
 }

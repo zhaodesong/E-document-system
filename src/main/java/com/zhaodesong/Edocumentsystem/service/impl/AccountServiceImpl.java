@@ -59,4 +59,9 @@ public class AccountServiceImpl implements AccountService {
         account.setUpdateTime(LocalDateTime.now());
         return accountDao.updateById(account);
     }
+
+    @Override
+    public Account getByMail(String mail) {
+        return accountDao.getByMail(mail);
+    }
 }

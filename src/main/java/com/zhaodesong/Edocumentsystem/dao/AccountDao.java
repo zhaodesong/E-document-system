@@ -50,4 +50,7 @@ public interface AccountDao {
             + "WHERE id = #{id}"
             + "</script>")
     int updateById(Account account);
+
+    @Select("SELECT * FROM account WHERE mail = #{mail}")
+    Account getByMail(String mail);
 }

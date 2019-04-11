@@ -12,11 +12,11 @@ public class ProjectAccountQuery implements Serializable {
 
     private Long id;
 
-    private Integer teamId;
+    private Integer projectId;
 
     private Integer accountId;
 
-    private Byte permission;
+    private String permission;
 
     private LocalDateTime createTime;
 

@@ -1,24 +1,21 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title></title>
+    <title>${title!}</title>
     <link rel="stylesheet" href="css/bootstrap.min.css" type="text/css"/>
     <link rel="stylesheet" href="css/animate.min.css" type="text/css"/>
     <link rel="stylesheet" href="css/rmodal.css" type="text/css"/>
-
     <style>
         .doc{border:1px solid;}
     </style>
 </head>
 <body>
-<#--<#include "account.ftl" encoding="UTF-8" parse=true>-->
 <p style="color:red;">${msg!}</p>
-<div class="doclist">
 <#if documents?size=0>
-    <p id="noitem">项目中还没有文件</p>
-    <#--上传新文件-->
-    <form method="POST" action="/upload?parentId=0&level=0&flag=1" enctype="multipart/form-data" id="uploadForm">
+    <p>文件夹为空</p>
+<#--上传新文件-->
+    <form method="POST" action="/upload?parentId=${parentId!}&level=${level!}&flag=0" enctype="multipart/form-data" id="uploadForm">
         <input type="file" name="file" id="fileUpload"/><br/><br/>
     </form>
 <#else>
@@ -26,27 +23,26 @@
         <div class="doc" id="${doc.docId}">
             <#if doc.type=false>
                 <p class="docName">${doc.name}</p>
-                <#--下载-->
+            <#--下载-->
                 <button><a href="/download?did=${doc.docId}&dver=${doc.version}">下载</a></button>
-                <#--更新文件-->
+            <#--更新文件-->
                 <form method="POST" action="/update?docId=${doc.docId}"
                       enctype="multipart/form-data" id="updateForm">
                     <input type="file" name="file" id="fileUpdate"/><br/><br/>
                 </form>
-                <#--查看历史版本-->
+            <#--查看历史版本-->
                 <a href="/historyVersion?docId=${doc.docId}">查看历史版本</a>
-                <#--重命名-->
+            <#--重命名-->
                 <a href="#" class="showModal btn btn-success">重命名</a>
-                <#--创建副本-->
+            <#--创建副本-->
                 <a href="#" class="copyFile">创建副本</a>
-                <#--删除-->
+            <#--删除-->
                 <a href="#" class="deleteFile">删除</a>
             <#else >
                 <p class="docName">${doc.name}</p>
-                <#--重命名-->
-                <a href="/toSingleFolder?docId=${doc.docId!}&level=${doc.level!}" class="to_single_folder btn btn-success">进入</a>
+            <#--重命名-->
                 <a href="#" class="showModal btn btn-success">重命名</a>
-                <#--删除-->
+            <#--删除-->
                 <a href="#" class="deleteFile">删除</a>
             </#if>
             <br/>
@@ -54,14 +50,13 @@
         </div>
     </#list>
 <#--上传-->
-    <form method="POST" action="/upload?parentId=${documents[0].parentId}&level=${documents[0].level}$flag=1"
+    <form method="POST" action="/upload?parentId=${documents[0].parentId}&level=${documents[0].level}&flag=0"
           enctype="multipart/form-data" id="uploadForm">
         <input type="file" name="file" id="fileUpload"/><br/><br/>
     </form>
 
 
 </#if>
-</div>
 <div class="">
     <a href="#" id="newFolder" class="showModal">新建文件夹</a>
 </div>
@@ -90,7 +85,7 @@
 <script type="text/javascript" src="/js/jquery.min.js"></script>
 <script type="text/javascript" src="/js/rmodal.js"></script>
 <script type="text/javascript">
-    $(document).on('click','.deleteFile', function () {
+    $('.deleteFile').on('click', function () {
         selectedBtn = $(this);
         $.ajax({
             url: '/fileDelete',
@@ -223,8 +218,8 @@
                     type: 'post',
                     data: {
                         folderName: $("#rename").val(),
-                        parentId:0,
-                        level:0
+                        docId: selectedBtn.closest('.doc').attr('id'),
+                        parentId:0
                     },
                     dataType: 'json',
                     beforeSend: function () {
@@ -233,14 +228,13 @@
                     success: function (data) {
                         if (data.result == 1) {
                             var newFolderDiv = $("<div class='doc' id='" + data.document.docId + "'>" +
-                                "<p class='oldName'>" + data.document.name + "</p>" +
+                                "<p>" + data.document.name + "</p>" +
                                 "<input type='hidden' value='" + data.document.docId + "'/>" +
-                                "<a href='/toSingleFolder?docId="+ data.document.docId+"&level="+ data.document.level+"' class='to_single_folder btn btn-success'>进入</a>" +
-                                "<a href='javascript:void(0)' class='showModal btn btn-success'>重命名</a>" +
+                                "<a href='#' class='to_single_folder btn btn-success'>进入文件夹</a>" +
+                                "<a href='#' class='showModal btn btn-success'>重命名</a>" +
                                 "<a href='#' class='deleteFile'>删除</a>" +
                                 "</div>");
-                            $('#noitem').remove();
-                            $('.doclist').append(newFolderDiv);
+                            $('.doc').last().after(newFolderDiv);
                             console.log("创建成功");
                         } else {
 
@@ -261,7 +255,7 @@
     document.addEventListener('keydown', function (ev) {
         modal.keydown(ev);
     }, false);
-    $(document).on("click",'.showModal', function () {
+    $('.showModal').on("click", function () {
         selectedBtn = $(this);
         modal.open();
     });

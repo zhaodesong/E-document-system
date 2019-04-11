@@ -30,7 +30,7 @@ public interface ProjectAccountDao {
             + "<if test='updateTimeEnd !=null'>AND create_time &lt; #{updateTimeEnd}</if>"
             + "</where>"
             + "</script>")
-    List<Project> findNotNull(ProjectAccountQuery projectAccountQuery);
+    List<ProjectAccount> findNotNull(ProjectAccountQuery projectAccountQuery);
 
     @Insert("INSERT INTO project_account(id,project_id,account_id,permission,create_time,update_time) " +
             "VALUES (#{id}, #{projectId}, #{accountId},#{permission}, #{createTime},#{updateTime})")
@@ -40,15 +40,9 @@ public interface ProjectAccountDao {
     @Delete("DELETE FROM project_account WHERE project_id = #{projectId}")
     int deleteByProjectId(Integer id);
 
-    @Update("<script>"
-            + "UPDATE project_account "
-            + "<set>"
-            + "<if test='id != null'>id = #{id}</if>"
-            + "<if test='projectId !=null'>project_id = #{projectId}</if>"
-            + "<if test='accountId !=null'>account_id = #{accountId}</if>"
-            + "<if test='permission !=null'>permission = #{permission}</if>"
-            + "</set>"
-            + "WHERE id = #{id}"
-            + "</script>")
-    int updateById(ProjectAccount projectAccount);
+    @Update("UPDATE project_account SET permission = #{permission} WHERE project_id = #{id} AND account_id=#{accountId}")
+    int updatePermission(ProjectAccount projectAccount);
+
+    @Delete("DELETE FROM project_account WHERE project_id = #{projectId} AND account_id = #{accountId}")
+    int deleteByProjectIdAndAccountId(Integer projectId, Integer accountId);
 }

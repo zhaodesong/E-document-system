@@ -27,7 +27,11 @@ public class DocumentQuery implements Serializable {
 
     private Long parentId;
 
-    private Byte level;
+    private Integer level;
+
+    private Integer power;
+
+    private Integer delFlag;
 
     private LocalDateTime createTimeStart;
 

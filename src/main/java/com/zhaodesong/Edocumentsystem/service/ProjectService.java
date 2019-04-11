@@ -15,4 +15,8 @@ public interface ProjectService {
     int insert(Project project);
 
     int deleteById(int id);
+
+    Project getProjectById(Integer id);
+
+    int renameProject(Integer projectId, String newName);
 }

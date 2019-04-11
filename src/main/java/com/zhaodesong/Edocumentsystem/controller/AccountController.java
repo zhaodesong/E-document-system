@@ -13,11 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @Slf4j
@@ -70,7 +70,7 @@ public class AccountController extends BaseController {
         return "login_success";
     }
 
-    @RequestMapping(value = "/register", method = RequestMethod.POST)
+    @RequestMapping(value = "/register")
     public String register() {
         String mail = request.getParameter("mail");
         String password = request.getParameter("password");
@@ -95,4 +95,49 @@ public class AccountController extends BaseController {
         request.setAttribute("msg", "注册失败,请稍后重试");
         return "register";
     }
+
+    @RequestMapping("")
+    @ResponseBody
+    public Object changeNickName() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
+            return "index";
+        }
+        Map<String, Object> result = new HashMap<>();
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        String newName = request.getParameter("newName");
+
+        Account account = new Account();
+        account.setId(accountId);
+        account.setNickName(newName);
+        accountService.updateById(account);
+        result.put("msg", "修改成功");
+        return result;
+    }
+
+    @RequestMapping("")
+    @ResponseBody
+    public Object changePassword() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
+            return "index";
+        }
+        Map<String, Object> result = new HashMap<>();
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        String oldPwd = request.getParameter("oldName");
+        String newPwd = request.getParameter("newName");
+
+        Account acc = accountService.getById(accountId);
+        if (!acc.getPassword().equals(DigestUtils.md5DigestAsHex(oldPwd.getBytes()))){
+            result.put("msg", "原密码不正确");
+            return result;
+        }
+        Account account = new Account();
+        account.setId(accountId);
+        account.setPassword(DigestUtils.md5DigestAsHex(newPwd.getBytes()));
+        accountService.updateById(account);
+        result.put("msg", "修改成功");
+        return result;
+    }
+
 }
