@@ -9,6 +9,7 @@ import org.apache.ibatis.ognl.InappropriateExpressionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public int insert(Document document) {
+        document.setCreateTime(LocalDateTime.now());
+        document.setUpdateTime(LocalDateTime.now());
         return documentDao.insert(document);
     }
 

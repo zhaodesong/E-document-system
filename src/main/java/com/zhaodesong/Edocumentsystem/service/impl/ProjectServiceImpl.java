@@ -7,6 +7,7 @@ import com.zhaodesong.Edocumentsystem.service.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -25,6 +26,8 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Override
     public int insert(Project project) {
+        project.setCreateTime(LocalDateTime.now());
+        project.setUpdateTime(LocalDateTime.now());
         return projectDao.insert(project);
     }
 

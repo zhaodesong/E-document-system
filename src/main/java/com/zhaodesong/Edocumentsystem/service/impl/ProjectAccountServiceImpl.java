@@ -7,6 +7,7 @@ import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -20,6 +21,8 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
 
     @Override
     public int insert(ProjectAccount projectAccount) {
+        projectAccount.setCreateTime(LocalDateTime.now());
+        projectAccount.setUpdateTime(LocalDateTime.now());
         return projectAccountDao.insert(projectAccount);
     }
 
