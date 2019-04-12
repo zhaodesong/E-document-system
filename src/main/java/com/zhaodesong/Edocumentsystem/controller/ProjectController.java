@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,19 +144,19 @@ public class ProjectController extends BaseController {
         return "login_success";
     }
 
-    @RequestMapping("/toLoginSuccess")
-    @ResponseBody
-    public Object projectRename() {
-        if (!sessionCheck()) {
-            request.setAttribute("msg", "登录失效，请重新登录");
-            return "index";
-        }
-        Map<String, Object> result = new HashMap<>();
-        Integer projectId = (Integer) session.getAttribute("projectId");
-        String newName = request.getParameter("newName");
-
-        projectService.renameProject(projectId, newName);
-        result.put("msg", "修改成功");
-        return result;
-    }
+//    @RequestMapping("/toLoginSuccess")
+//    @ResponseBody
+//    public Object projectRename() {
+//        if (!sessionCheck()) {
+//            request.setAttribute("msg", "登录失效，请重新登录");
+//            return "index";
+//        }
+//        Map<String, Object> result = new HashMap<>();
+//        Integer projectId = (Integer) session.getAttribute("projectId");
+//        String newName = request.getParameter("newName");
+//
+//        projectService.renameProject(projectId, newName);
+//        result.put("msg", "修改成功");
+//        return result;
+//    }
 }

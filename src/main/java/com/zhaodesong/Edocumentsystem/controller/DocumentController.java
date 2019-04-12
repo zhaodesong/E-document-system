@@ -289,23 +289,23 @@ public class DocumentController extends BaseController {
         return "history_version";
     }
 
-    @RequestMapping()
-    @ResponseBody
-    public Object changePermission() {
-        Map<String, Object> result = new HashMap<>();
-        Integer projectId = (Integer) session.getAttribute("projectId");
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        Long docId = Long.parseLong(request.getParameter("docId"));
-        Integer power = Integer.parseInt(request.getParameter("power"));
-
-//        if (!hasPermission(projectId, accountId)) {
-//            result.put("msg", "没有权限，修改失败");
-//            return result;
-//        }
-        documentService.changePermission(docId, power);
-        result.put("msg", "修改成功");
-        return result;
-    }
+//    @RequestMapping()
+//    @ResponseBody
+//    public Object changePermission() {
+//        Map<String, Object> result = new HashMap<>();
+//        Integer projectId = (Integer) session.getAttribute("projectId");
+//        Integer accountId = (Integer) session.getAttribute("accountId");
+//        Long docId = Long.parseLong(request.getParameter("docId"));
+//        Integer power = Integer.parseInt(request.getParameter("power"));
+//
+////        if (!hasPermission(projectId, accountId)) {
+////            result.put("msg", "没有权限，修改失败");
+////            return result;
+////        }
+//        documentService.changePermission(docId, power);
+//        result.put("msg", "修改成功");
+//        return result;
+//    }
 
 
     private String getCopyName(String fileName) {
