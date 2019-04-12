@@ -8,7 +8,7 @@
     <script src="/js/jquery.min.js"></script>
     <script src="/js/semantic.min.js"></script>
     <style>
-        .doc{border:1px solid #888888;max-width: 300px;height: 50px;box-shadow: 4px 4px 5px #888888;line-height: 50px;padding-left: 1em;margin-bottom: 30px;}
+        .doc{border:1px solid #888888;max-width: 500px;height: 50px;box-shadow: 4px 4px 5px #888888;line-height: 50px;padding-left: 1em;margin-bottom: 30px;}
         #fileUpload{opacity: 0;width:120px;height: 36px;position: relative;right:128px;bottom:6px;cursor: pointer!important;}
         .fileUpdate{position: absolute;opacity: 0;width:90px;height: 30px;left: 0;top:64px;}
         .operation{background-color: #f0f0f0;z-index:2;position: absolute;width: 90px;border:1px solid #b0b0b0;line-height: 30px;box-shadow: 2px 2px 2px #a0a0a0;
@@ -22,7 +22,7 @@
 <body>
 <#include "common/header.ftl" encoding="UTF-8" parse=true>
 <div class="ui container">
-    <p style="color:red;">${msg!}</p>
+<#--    <p style="color:red;">${msg!}</p>-->
     <div class="doclist">
         <#if documents?size=0>
             <p class="noitem">项目中还没有文件(夹)</p>

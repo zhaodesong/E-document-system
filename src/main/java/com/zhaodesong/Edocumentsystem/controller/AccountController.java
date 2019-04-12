@@ -115,29 +115,28 @@ public class AccountController extends BaseController {
 //        return result;
 //    }
 
-    @RequestMapping("")
-    @ResponseBody
-    public Object changePassword() {
-        if (!sessionCheck()) {
-            request.setAttribute("msg", "登录失效，请重新登录");
-            return "index";
-        }
-        Map<String, Object> result = new HashMap<>();
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        String oldPwd = request.getParameter("oldName");
-        String newPwd = request.getParameter("newName");
-
-        Account acc = accountService.getById(accountId);
-        if (!acc.getPassword().equals(DigestUtils.md5DigestAsHex(oldPwd.getBytes()))){
-            result.put("msg", "原密码不正确");
-            return result;
-        }
-        Account account = new Account();
-        account.setId(accountId);
-        account.setPassword(DigestUtils.md5DigestAsHex(newPwd.getBytes()));
-        accountService.updateById(account);
-        result.put("msg", "修改成功");
-        return result;
-    }
+//
+//    public Object changePassword() {
+//        if (!sessionCheck()) {
+//            request.setAttribute("msg", "登录失效，请重新登录");
+//            return "index";
+//        }
+//        Map<String, Object> result = new HashMap<>();
+//        Integer accountId = (Integer) session.getAttribute("accountId");
+//        String oldPwd = request.getParameter("oldName");
+//        String newPwd = request.getParameter("newName");
+//
+//        Account acc = accountService.getById(accountId);
+//        if (!acc.getPassword().equals(DigestUtils.md5DigestAsHex(oldPwd.getBytes()))){
+//            result.put("msg", "原密码不正确");
+//            return result;
+//        }
+//        Account account = new Account();
+//        account.setId(accountId);
+//        account.setPassword(DigestUtils.md5DigestAsHex(newPwd.getBytes()));
+//        accountService.updateById(account);
+//        result.put("msg", "修改成功");
+//        return result;
+//    }
 
 }

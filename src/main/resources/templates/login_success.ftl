@@ -29,12 +29,6 @@
                                 </div>
                             </div>
                         </div>
-
-<#--                        <div class="projectDiv">-->
-<#--                            <a href="/toProject?pid=${p.id}">${p.name!}</a>-->
-<#--                            &lt;#&ndash;如果有权限，显示删除，否则显示退出&ndash;&gt;-->
-<#--                            <a href="/deleteProject?pid=${p.id}">删除该项目</a>-->
-<#--                        </div>-->
                     </#list>
 
             </div>
@@ -83,16 +77,20 @@
             success: function (data) {
                 if (data.result == true) {
                     var newProjectDiv = $("<div class='ui card projectDiv'>" +
-                        "<a href='/toProject?pid=" + data.project.pid + "'>" + data.project.name +
+                    "<a class='pname' href='/toProject?pid=${p.id}'>" +
+                        "${p.name!}" +
                         "</a>" +
-                        "<div class='content'><div class='meta'>" +
-                        "<a>删除</a><a>删除</a><a>删除</a></div></div></div>");
+                        "<div class='content'>" +
+                        "<div class='meta'>" +
+                        "<a>成员管理</a>" +
+                        "<a>删除</a>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>");
                     $('.noitem').remove();
                     $('.projectlist').append(newProjectDiv);
                 } else {
                     alert('创建失败');
-                    // $("loading").show();
-                    // document.getElementById("loading").innerHTML = "操作失败，请稍后重试";
                 }
             }
         });
