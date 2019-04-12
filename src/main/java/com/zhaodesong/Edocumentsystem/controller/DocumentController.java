@@ -1,10 +1,7 @@
 package com.zhaodesong.Edocumentsystem.controller;
 
 import com.zhaodesong.Edocumentsystem.base.BaseController;
-import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.po.Document;
-import com.zhaodesong.Edocumentsystem.po.ProjectAccount;
-import com.zhaodesong.Edocumentsystem.service.AccountService;
 import com.zhaodesong.Edocumentsystem.service.DocumentService;
 import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
 import com.zhaodesong.Edocumentsystem.util.FileUtils;
@@ -34,8 +31,6 @@ public class DocumentController extends BaseController {
     private static String FOLDER = "D://temp//";
 
 
-    @Autowired
-    private AccountService accountService;
     @Autowired
     private DocumentService documentService;
     @Autowired
@@ -294,23 +289,23 @@ public class DocumentController extends BaseController {
         return "history_version";
     }
 
-    @RequestMapping()
-    @ResponseBody
-    public Object changePermission() {
-        Map<String, Object> result = new HashMap<>();
-        Integer projectId = (Integer) session.getAttribute("projectId");
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        Long docId = Long.parseLong(request.getParameter("docId"));
-        Integer power = Integer.parseInt(request.getParameter("power"));
-
-        if (!hasPermission(projectId, accountId, docId)) {
-            result.put("msg", "没有权限，修改失败");
-            return result;
-        }
-        documentService.changePermission(docId, power);
-        result.put("msg", "修改成功");
-        return result;
-    }
+//    @RequestMapping()
+//    @ResponseBody
+//    public Object changePermission() {
+//        Map<String, Object> result = new HashMap<>();
+//        Integer projectId = (Integer) session.getAttribute("projectId");
+//        Integer accountId = (Integer) session.getAttribute("accountId");
+//        Long docId = Long.parseLong(request.getParameter("docId"));
+//        Integer power = Integer.parseInt(request.getParameter("power"));
+//
+////        if (!hasPermission(projectId, accountId)) {
+////            result.put("msg", "没有权限，修改失败");
+////            return result;
+////        }
+//        documentService.changePermission(docId, power);
+//        result.put("msg", "修改成功");
+//        return result;
+//    }
 
 
     private String getCopyName(String fileName) {
@@ -332,24 +327,7 @@ public class DocumentController extends BaseController {
         return newName + oldName.substring(index);
     }
 
-    private boolean hasPermission(Integer projectId, Integer accountId, Long docId) {
-        // 判断是否为高权限者
-        ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, accountId);
-        String p = projectAccount.getPermission();
-        if ("11".equals(p)) {
-            return true;
-        }
-
-        // 判断是否为文件拥有者
-        Document document = documentService.getAllDocInfoByDocId(docId).get(0);
-        if (!document.getAccountIdCreate().equals(accountId)) {
-            return true;
-        }
-
-        // 判断文档本身权限和账户权限
-        if (document.getPower() == 1 && "01".equals(p)) {
-            return true;
-        }
-        return false;
-    }
+//    private boolean hasPermission(Integer projectId, Integer accountId) {
+//
+//    }
 }

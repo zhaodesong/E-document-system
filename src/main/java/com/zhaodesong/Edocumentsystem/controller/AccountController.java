@@ -57,7 +57,7 @@ public class AccountController extends BaseController {
             return "index";
         }
 
-        request.setAttribute("nickName", account.getNickName());
+        session.setAttribute("nickName", account.getNickName());
         session.setAttribute("mail", mail);
         session.setAttribute("accountId", account.getId());
         ProjectQuery projectQuery = new ProjectQuery();
@@ -96,24 +96,24 @@ public class AccountController extends BaseController {
         return "register";
     }
 
-    @RequestMapping("")
-    @ResponseBody
-    public Object changeNickName() {
-        if (!sessionCheck()) {
-            request.setAttribute("msg", "登录失效，请重新登录");
-            return "index";
-        }
-        Map<String, Object> result = new HashMap<>();
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        String newName = request.getParameter("newName");
-
-        Account account = new Account();
-        account.setId(accountId);
-        account.setNickName(newName);
-        accountService.updateById(account);
-        result.put("msg", "修改成功");
-        return result;
-    }
+//    @RequestMapping("")
+//    @ResponseBody
+//    public Object changeNickName() {
+//        if (!sessionCheck()) {
+//            request.setAttribute("msg", "登录失效，请重新登录");
+//            return "index";
+//        }
+//        Map<String, Object> result = new HashMap<>();
+//        Integer accountId = (Integer) session.getAttribute("accountId");
+//        String newName = request.getParameter("newName");
+//
+//        Account account = new Account();
+//        account.setId(accountId);
+//        account.setNickName(newName);
+//        accountService.updateById(account);
+//        result.put("msg", "修改成功");
+//        return result;
+//    }
 
     @RequestMapping("")
     @ResponseBody

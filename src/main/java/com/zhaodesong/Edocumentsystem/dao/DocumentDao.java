@@ -36,7 +36,7 @@ public interface DocumentDao {
     List<Document> findNotNull(DocumentQuery documentQuery);
 
     @Insert("INSERT INTO document(id,doc_id,project_id,name,version,account_id_create,account_id_modify,type,parent_id,level,power,del_flag,create_time,update_time) " +
-            "VALUES (#{id}, #{docId}, #{projectId}, #{name}, #{version}, #{accountIdCreate}, #{accountIdModify}, #{type}, #{parentId}, #{level}, #{power},#{del_flag}#{createTime}, #{updateTime})")
+            "VALUES (#{id}, #{docId}, #{projectId}, #{name}, #{version}, #{accountIdCreate}, #{accountIdModify}, #{type}, #{parentId}, #{level}, #{power},#{delFlag},#{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
     int insert(Document document);
 
@@ -60,6 +60,6 @@ public interface DocumentDao {
             "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND level=#{level})")
     List<Document> getAllDocInfoByParentId(@Param("parentId")Long parentId,@Param("level")Byte level);
 
-    @Update("UPDATE document SET power=#{name} WHERE doc_id=#{docId}")
+    @Update("UPDATE document SET name=#{name} WHERE doc_id=#{docId}")
     int renameByDocId(@Param("docId")Long docId, @Param("name")String name);
 }
