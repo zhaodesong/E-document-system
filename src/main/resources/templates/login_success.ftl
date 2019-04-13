@@ -18,14 +18,14 @@
             <div class="projectlist ui divided items">
                 <#if project?? && (project?size > 0)>
                     <#list project! as p>
-                        <div class="ui card projectDiv">
+                        <div class="ui card projectDiv" id=${p.id}>
                             <a class="pname" href="/toProject?pid=${p.id}">
                                 ${p.name!}
                             </a>
                             <div class="content" >
                                 <div class="meta">
-                                    <a>成员管理</a>
-                                    <a>删除</a>
+                                    <a href="#" class="accountManage">成员管理</a>
+                                    <a href="/deleteProject?pid=${p.id}" class="deleteProject">删除</a>
                                 </div>
                             </div>
                         </div>
@@ -76,14 +76,14 @@
             dataType: 'json',
             success: function (data) {
                 if (data.result == true) {
-                    var newProjectDiv = $("<div class='ui card projectDiv'>" +
-                    "<a class='pname' href='/toProject?pid=${p.id}'>" +
-                        "${p.name!}" +
+                    var newProjectDiv = $("<div class='ui card projectDiv' id=" + data.project.id + ">" +
+                    "<a class='pname' href='/toProject?pid=" + data.project.id + "'>" +
+                        data.project.name +
                         "</a>" +
                         "<div class='content'>" +
                         "<div class='meta'>" +
-                        "<a>成员管理</a>" +
-                        "<a>删除</a>" +
+                        "<a href='#' class='accountManage'>成员管理</a>" +
+                        "<a href='/deleteProject?pid="+ data.project.id +"' class='deleteProject'>删除</a>" +
                         "</div>" +
                         "</div>" +
                         "</div>");

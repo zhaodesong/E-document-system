@@ -39,11 +39,6 @@ public class ProjectController extends BaseController {
     @Autowired
     private ProjectAccountService projectAccountService;
 
-    @RequestMapping(value = "/newProject")
-    public String newProject(HttpSession session) {
-        return "create_project";
-    }
-
     @RequestMapping(value = "/createProject")
     @ResponseBody
     public Object createProject() {

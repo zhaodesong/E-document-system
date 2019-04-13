@@ -2,6 +2,7 @@ package com.zhaodesong.Edocumentsystem.dao;
 
 import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.query.AccountQuery;
+import com.zhaodesong.Edocumentsystem.vo.AccountForManage;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -53,4 +54,7 @@ public interface AccountDao {
 
     @Select("SELECT * FROM account WHERE mail = #{mail}")
     Account getByMail(String mail);
+
+    @Select("SELECT account.id,mail,nick_name FROM account,project_account WHERE project_id=22 AND account.id = account_id")
+    List<AccountForManage> getAccountForManage(Integer projectId);
 }

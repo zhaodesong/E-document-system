@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 public class BaseController {
+    protected static String FOLDER = "D://temp//";
+
     @Autowired
     protected HttpServletRequest request;
     @Autowired

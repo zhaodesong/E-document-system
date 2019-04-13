@@ -4,6 +4,7 @@ import com.zhaodesong.Edocumentsystem.query.AccountQuery;
 import com.zhaodesong.Edocumentsystem.service.AccountService;
 import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.dao.AccountDao;
+import com.zhaodesong.Edocumentsystem.vo.AccountForManage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,5 +64,10 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account getByMail(String mail) {
         return accountDao.getByMail(mail);
+    }
+
+    @Override
+    public List<AccountForManage> getAccountForManage(Integer projectId) {
+        return accountDao.getAccountForManage(projectId);
     }
 }

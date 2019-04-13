@@ -28,7 +28,7 @@ import java.util.Map;
 @Controller
 @Slf4j
 public class DocumentController extends BaseController {
-    private static String FOLDER = "D://temp//";
+
 
 
     @Autowired
