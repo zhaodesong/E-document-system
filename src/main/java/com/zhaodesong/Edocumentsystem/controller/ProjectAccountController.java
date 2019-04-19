@@ -62,7 +62,6 @@ public class ProjectAccountController extends BaseController {
         ProjectAccount insertAccount = new ProjectAccount();
         insertAccount.setAccountId(account.getId());
         insertAccount.setProjectId(projectId);
-        // TODO 根据用户ID设置不同的权限
         insertAccount.setPermission("01");
         projectAccountService.insert(insertAccount);
 

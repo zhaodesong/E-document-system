@@ -66,7 +66,6 @@ public class ProjectController extends BaseController {
         ProjectAccount projectAccount = new ProjectAccount();
         projectAccount.setAccountId(accountId);
         projectAccount.setProjectId(project.getId());
-        // TODO 根据用户ID设置不同的权限
         projectAccount.setPermission("111");
 
         // 磁盘中创建对应文件夹
@@ -83,9 +82,6 @@ public class ProjectController extends BaseController {
         return result;
     }
 
-    /*
-    TODO 未进行权限验证
-     */
     @RequestMapping(value = "/deleteProject")
     @ResponseBody
     public Object deleteProject() {
