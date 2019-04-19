@@ -2,6 +2,7 @@ package com.zhaodesong.Edocumentsystem.dao;
 
 import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.query.ProjectQuery;
+import com.zhaodesong.Edocumentsystem.vo.ProjectWithPower;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -19,12 +20,12 @@ public interface ProjectDao {
     @Select("<script>"
             + "SELECT * FROM project"
             + "<where>"
-            + "<if test='name != null'>AND name = #{name}</if>"
-            + "<if test='createAccount !=null'>AND create_account = #{createAccount}</if>"
-            + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart}</if>"
-            + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd}</if>"
-            + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart}</if>"
-            + "<if test='updateTimeEnd !=null'>AND create_time &lt; #{updateTimeEnd}</if>"
+            + "<if test='name != null'>AND name = #{name} </if>"
+            + "<if test='createAccount !=null'>AND create_account = #{createAccount} </if>"
+            + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart} </if>"
+            + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd} </if>"
+            + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart} </if>"
+            + "<if test='updateTimeEnd !=null'>AND create_time &lt; #{updateTimeEnd} </if>"
             + "</where>"
             + "</script>")
     List<Project> findNotNull(ProjectQuery project);
@@ -40,10 +41,13 @@ public interface ProjectDao {
     @Update("<script>"
             + "UPDATE project "
             + "<set>"
-            + "<if test='name != null'>name = #{name}</if>"
-            + "<if test='createAccount !=null'>create_account = #{createAccount}</if>"
+            + "<if test='name != null'>name = #{name}</if> "
+            + "<if test='createAccount !=null'>create_account = #{createAccount}</if> "
             + "</set>"
             + "WHERE id = #{id}"
             + "</script>")
     int updateById(Project project);
+
+    @Select("SELECT project.id as id,name,permission as power FROM project, project_account WHERE project.id = project_id AND account_id = #{accountId}")
+    List<ProjectWithPower> getProjectPowerByAccountId(Integer accountId);
 }

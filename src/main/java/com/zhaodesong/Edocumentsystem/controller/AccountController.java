@@ -2,11 +2,10 @@ package com.zhaodesong.Edocumentsystem.controller;
 
 import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Account;
-import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.query.AccountQuery;
-import com.zhaodesong.Edocumentsystem.query.ProjectQuery;
 import com.zhaodesong.Edocumentsystem.service.AccountService;
 import com.zhaodesong.Edocumentsystem.service.ProjectService;
+import com.zhaodesong.Edocumentsystem.vo.ProjectWithPower;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +37,11 @@ public class AccountController extends BaseController {
         return "register";
     }
 
+    @RequestMapping(value = "/toAccount")
+    public String toAccount() {
+        return "account";
+    }
+
     @RequestMapping(value = "/login")
     public String login() {
         String mail = request.getParameter("mail");
@@ -60,13 +64,10 @@ public class AccountController extends BaseController {
         session.setAttribute("nickName", account.getNickName());
         session.setAttribute("mail", mail);
         session.setAttribute("accountId", account.getId());
-        ProjectQuery projectQuery = new ProjectQuery();
-        projectQuery.setCreateAccount(account.getId());
-        // 查询该用户的项目信息
-        List<Project> projectList = projectService.getProjectNotNull(projectQuery);
-        if (projectList != null || projectList.size() == 0) {
-            request.setAttribute("project", projectList);
-        }
+
+        // 查询该用户加入的项目
+        List<ProjectWithPower> projectList = projectService.getProjectPowerByAccountId(account.getId());
+        request.setAttribute("project", projectList);
         return "login_success";
     }
 
@@ -84,7 +85,7 @@ public class AccountController extends BaseController {
 
         Account account = new Account();
         account.setMail(mail);
-        account.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+        account.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()).toLowerCase());
         account.setNickName(nickName);
         account.setVerifyFlag(false);
 
@@ -96,47 +97,53 @@ public class AccountController extends BaseController {
         return "register";
     }
 
-//    @RequestMapping("")
-//    @ResponseBody
-//    public Object changeNickName() {
-//        if (!sessionCheck()) {
-//            request.setAttribute("msg", "登录失效，请重新登录");
-//            return "index";
-//        }
-//        Map<String, Object> result = new HashMap<>();
-//        Integer accountId = (Integer) session.getAttribute("accountId");
-//        String newName = request.getParameter("newName");
-//
-//        Account account = new Account();
-//        account.setId(accountId);
-//        account.setNickName(newName);
-//        accountService.updateById(account);
-//        result.put("msg", "修改成功");
-//        return result;
-//    }
+    @RequestMapping("/logout")
+    public String logout() {
+        session.invalidate();
+        return "index";
+    }
 
-//
-//    public Object changePassword() {
-//        if (!sessionCheck()) {
-//            request.setAttribute("msg", "登录失效，请重新登录");
-//            return "index";
-//        }
-//        Map<String, Object> result = new HashMap<>();
-//        Integer accountId = (Integer) session.getAttribute("accountId");
-//        String oldPwd = request.getParameter("oldName");
-//        String newPwd = request.getParameter("newName");
-//
-//        Account acc = accountService.getById(accountId);
-//        if (!acc.getPassword().equals(DigestUtils.md5DigestAsHex(oldPwd.getBytes()))){
-//            result.put("msg", "原密码不正确");
-//            return result;
-//        }
-//        Account account = new Account();
-//        account.setId(accountId);
-//        account.setPassword(DigestUtils.md5DigestAsHex(newPwd.getBytes()));
-//        accountService.updateById(account);
-//        result.put("msg", "修改成功");
-//        return result;
-//    }
+    @RequestMapping("/changeNickName")
+    @ResponseBody
+    public Object changeNickName() {
+
+        Map<String, Object> result = new HashMap<>();
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        String newName = request.getParameter("nickName");
+
+        Account account = new Account();
+        account.setId(accountId);
+        account.setNickName(newName);
+        accountService.updateById(account);
+        session.setAttribute("nickName", newName);
+        result.put("msg", "修改成功");
+        result.put("result", 1);
+        return result;
+    }
+
+
+    @RequestMapping("/changePwd")
+    @ResponseBody
+    public Object changePassword() {
+        Map<String, Object> result = new HashMap<>();
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        String oldPwd = request.getParameter("oldPwd");
+        String newPwd = request.getParameter("newPwd");
+
+        Account acc = accountService.getById(accountId);
+        System.out.println(oldPwd + "     " + acc.getPassword()  + "      " + DigestUtils.md5DigestAsHex(oldPwd.getBytes()));
+        if (!acc.getPassword().equals(DigestUtils.md5DigestAsHex(oldPwd.getBytes()).toLowerCase())) {
+            result.put("msg", "原密码不正确");
+            result.put("result", 2);
+            return result;
+        }
+        Account account = new Account();
+        account.setId(accountId);
+        account.setPassword(DigestUtils.md5DigestAsHex(newPwd.getBytes()));
+        accountService.updateById(account);
+        result.put("msg", "修改成功");
+        result.put("result", 1);
+        return result;
+    }
 
 }

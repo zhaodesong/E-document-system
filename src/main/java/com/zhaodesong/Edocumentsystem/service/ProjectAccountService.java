@@ -20,4 +20,6 @@ public interface ProjectAccountService {
     int deleteByProjectIdAndAccountId(Integer projectId, Integer accountId);
 
     int updatePermission(ProjectAccount projectAccount);
+
+    int transferProject(Integer projectId, Integer oldAccount, Integer newAccount);
 }

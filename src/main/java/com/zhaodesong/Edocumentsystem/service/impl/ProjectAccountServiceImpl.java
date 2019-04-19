@@ -59,4 +59,18 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
     public int updatePermission(ProjectAccount projectAccount) {
         return projectAccountDao.updatePermission(projectAccount);
     }
+
+    @Override
+    public int transferProject(Integer projectId, Integer oldAccount, Integer newAccount) {
+        ProjectAccount projectAccount = new ProjectAccount();
+        projectAccount.setProjectId(projectId);
+        projectAccount.setAccountId(oldAccount);
+        projectAccount.setPermission("01");
+        projectAccountDao.updatePermission(projectAccount);
+
+        projectAccount.setAccountId(newAccount);
+        projectAccount.setPermission("111");
+        projectAccountDao.updatePermission(projectAccount);
+        return 1;
+    }
 }

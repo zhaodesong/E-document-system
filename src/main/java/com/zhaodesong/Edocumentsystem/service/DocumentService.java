@@ -3,6 +3,7 @@ package com.zhaodesong.Edocumentsystem.service;
 import com.zhaodesong.Edocumentsystem.po.Document;
 import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.query.DocumentQuery;
+import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -32,11 +33,11 @@ public interface DocumentService {
 
     List<Document> getAllDocInfoByDocId(Long docId);
 
-    List<Document> getAllDocInfoByProjectId(Integer projectId);
+    List<DocumentWithPower> getAllDocInfoByProjectId(Integer projectId);
 
     int renameByDocId(Long docId, String name);
 
-    List<Document> getAllDocInfoByParentId(Long parentId, Byte level);
+    List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Byte level);
 
     int changePermission(Long docId, Integer power);
 }

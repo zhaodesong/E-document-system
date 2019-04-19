@@ -17,6 +17,8 @@
         .opt{position:relative;}
         .tip{cursor: pointer;}
         .operation a:hover,.operation form:hover{background-color: #80bdff;}
+        .ui.vertical.menu:hover{background-color: #80bdff!important;}
+        .ui.vertical.menu{border-radius:0;width: 88px;background-color: #f0f0f0;border:none;margin: 0;padding: 0;border-color:#f0f0f0; }
     </style>
 </head>
 <body>
@@ -39,28 +41,45 @@
 
                         <div class="opt fright"  style="right: 20px;">
                             <span class="tip">•••</span>
-                            <div class="operation hide">
+                            <div class="operation hide menu">
                                 <a href="/download?did=${doc.docId}&dver=${doc.version}">下载</a>
-                                <form method="POST" action="/update?docId=${doc.docId}"
-                                      enctype="multipart/form-data" class="updateForm">
-                                    <a>更新</a>
-                                    <input type="file" name="file" class="fileUpdate"/>
-                                </form>
-                                <a href="/historyVersion?docId=${doc.docId}">历史版本</a>
-                                <a href="#" class="showModal btn btn-success">重命名</a>
-                                <a href="#" class="copyFile">创建副本</a>
-                                <a href="#" class="deleteFile">删除</a>
+                                <#if doc.isEdit! = "1">
+                                    <form method="POST" action="/update?docId=${doc.docId}"
+                                            enctype="multipart/form-data" class="updateForm">
+                                        <a>更新</a>
+                                        <input type="file" name="file" class="fileUpdate"/>
+                                    </form>
+                                    <a href="/historyVersion?docId=${doc.docId}">历史版本</a>
+                                    <a href="#" class="showModal btn btn-success">重命名</a>
+                                    <a href="#" class="copyFile">创建副本</a>
+                                    <a href="#" class="deleteFile">删除</a>
+                                    <div class="ui vertical menu">
+                                        <div class="ui dropdown item">
+                                            权限
+                                            <i class="dropdown icon"></i>
+                                            <div class="menu">
+
+                                                <a class="item isEditItem <#if doc.isEdit! = "1">active</#if>" data-value="1">可编辑</a>
+                                                <a class="item isEditItem <#if doc.isEdit! = "0">active</#if>" data-value="0">不可编辑</a>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </#if>
+
                             </div>
                         </div>
                     <#else ><!--文件夹-->
                         <a href="/toSingleFolder?docId=${doc.docId!}&level=${doc.level!}" class="to_single_folder docName">${doc.name}</a>
-                        <div class="opt fright" style="right: 20px;">
-                            <span class="tip">•••</span>
-                            <div class="operation hide">
-                                <a href="#" class="showModal btn btn-success">重命名</a>
-                                <a href="#" class="deleteFile">删除</a>
+                        <#if doc.isEdit! = "1">
+                            <div class="opt fright" style="right: 20px;">
+                                <span class="tip">•••</span>
+                                <div class="operation hide">
+                                    <a href="#" class="showModal btn btn-success">重命名</a>
+                                    <a href="#" class="deleteFile">删除</a>
+                                </div>
                             </div>
-                        </div>
+                        </#if>
                     </#if>
                 </div>
             </#list>
@@ -168,12 +187,12 @@
         $('.doc:not(#'+id+')').find('.operation').addClass('hide');
         $(this).next('.operation').toggleClass('hide');
     });
-    $(document).on('click',function (e) {
-        if(e.target.className.search('tip') !== -1) return;
-        $('.operation').addClass('hide');
-    });
+    // $(document).on('click',function (e) {
+    //     if(e.target.className.search('tip') !== -1) return;
+    //     $('.operation').addClass('hide');
+    // });
 
-    $('.doclist').on('click','.showModal',function () {
+    $(document).on('click','.showModal',function () {
         selectedBtn = $(this);
         if(selectedBtn.attr('id') !== 'newFolder'){
             $('#inputName').val(selectedBtn.closest('.doc').find('.docName').html().split('.')[0]);
@@ -184,6 +203,9 @@
             .modal('show')
         ;
     });
+    $('.ui.dropdown')
+        .dropdown()
+    ;
 
     var selectedBtn;
     $('#confirm').on('click',function () {
@@ -243,6 +265,32 @@
             });
         }
     })
+</script>
+<script>
+    var selectIsEdit;
+    $('.isEditItem').on('click',function () {
+        selectIsEdit = $(this);
+        $.ajax({
+            url: '/changeDocPower',
+            type: 'post',
+            data: {
+                docId: selectIsEdit.closest('.doc').attr('id'),
+                power: $('.isEditItem').attr("data-value")
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data.result == 1) {
+                    $(".isEditItem").removeClass("active");
+                    $(this).addClass("active");
+                } else {
+                    alert("修改失败");
+                }
+            },
+            error: function (err) {
+                console.log(err);
+            }
+        });
+    });
 </script>
 </body>
 </html>

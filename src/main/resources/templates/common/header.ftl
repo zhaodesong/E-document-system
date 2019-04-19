@@ -5,7 +5,8 @@
         </a>
 
         <div class="right item" style="float: right;color:white;">
-            <span>欢迎您，${Session.nickName!}</span>
+            <span>欢迎您，<a href="/toAccount">${Session.nickName!}</a></span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="/logout">注销登录</a>
         </div>
     </div>
 </div>

@@ -55,6 +55,6 @@ public interface AccountDao {
     @Select("SELECT * FROM account WHERE mail = #{mail}")
     Account getByMail(String mail);
 
-    @Select("SELECT account.id,mail,nick_name FROM account,project_account WHERE project_id=22 AND account.id = account_id")
+    @Select("SELECT account.id,mail,nick_name,permission as power FROM account,project_account WHERE project_id=#{projectId} AND account.id = account_id")
     List<AccountForManage> getAccountForManage(Integer projectId);
 }

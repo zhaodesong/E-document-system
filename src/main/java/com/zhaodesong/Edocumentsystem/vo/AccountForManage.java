@@ -17,5 +17,5 @@ public class AccountForManage implements Serializable {
 
     private String nickName;
 
-    private boolean power;
+    private String power;
 }

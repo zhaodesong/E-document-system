@@ -2,6 +2,7 @@ package com.zhaodesong.Edocumentsystem.dao;
 
 import com.zhaodesong.Edocumentsystem.po.Document;
 import com.zhaodesong.Edocumentsystem.query.DocumentQuery;
+import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
@@ -18,19 +19,19 @@ public interface DocumentDao {
     @Select("<script>"
             + "SELECT * FROM document"
             + "<where>"
-            + "<if test='docId != null'>AND doc_id = #{docId}</if>"
-            + "<if test='projectId != null'>AND project_id = #{projectId}</if>"
-            + "<if test='name !=null'>AND name = #{name}</if>"
-            + "<if test='version !=null'>AND version = #{version}</if>"
-            + "<if test='accountIdCreate !=null'>AND account_id_create = #{accountIdCreate}</if>"
-            + "<if test='accountIdModify !=null'>AND account_id_modify = #{accountIdModify}</if>"
-            + "<if test='type !=null'>AND type = #{type}</if>"
-            + "<if test='parentId !=null'>AND parent_id = #{parentId}</if>"
-            + "<if test='level !=null'> AND level = #{level}</if>"
-            + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart}</if>"
-            + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd}</if>"
-            + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart}</if>"
-            + "<if test='updateTimeEnd !=null'>AND create_time &lt; #{updateTimeEnd}</if>"
+            + "<if test='docId != null'>AND doc_id = #{docId} </if>"
+            + "<if test='projectId != null'>AND project_id = #{projectId} </if>"
+            + "<if test='name !=null'>AND name = #{name} </if>"
+            + "<if test='version !=null'>AND version = #{version} </if>"
+            + "<if test='accountIdCreate !=null'>AND account_id_create = #{accountIdCreate} </if>"
+            + "<if test='accountIdModify !=null'>AND account_id_modify = #{accountIdModify} </if>"
+            + "<if test='type !=null'>AND type = #{type} </if>"
+            + "<if test='parentId !=null'>AND parent_id = #{parentId} </if>"
+            + "<if test='level !=null'> AND level = #{level} </if>"
+            + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart} </if>"
+            + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd} </if>"
+            + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart} </if>"
+            + "<if test='updateTimeEnd !=null'>AND create_time &lt; #{updateTimeEnd} </if>"
             + "</where>"
             + "</script>")
     List<Document> findNotNull(DocumentQuery documentQuery);
@@ -47,18 +48,18 @@ public interface DocumentDao {
     int deleteByDocId(Long docId);
 
     @Update("UPDATE document SET power=#{power} WHERE doc_id=#{docId}")
-    int changePermission(@Param("docId")Long docId, @Param("name")Integer power);
+    int changePermission(@Param("docId")Long docId, @Param("power")Integer power);
 
     @Select("SELECT MAX(doc_id) FROM document")
     Long getMaxDocId();
 
     @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND d.level=#{level} AND d.version = " +
             "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND project_id=#{projectId} AND level=#{level})")
-    List<Document> getAllDocInfoByProjectId(@Param("projectId")Integer projectId,@Param("level")Byte level);
+    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId")Integer projectId, @Param("level")Byte level);
 
     @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND d.level=#{level} AND d.version = " +
             "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND level=#{level})")
-    List<Document> getAllDocInfoByParentId(@Param("parentId")Long parentId,@Param("level")Byte level);
+    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId")Long parentId,@Param("level")Byte level);
 
     @Update("UPDATE document SET name=#{name} WHERE doc_id=#{docId}")
     int renameByDocId(@Param("docId")Long docId, @Param("name")String name);

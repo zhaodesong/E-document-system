@@ -20,14 +20,14 @@ public interface ProjectAccountDao {
     @Select("<script>"
             + "SELECT * FROM project_account"
             + "<where>"
-            + "<if test='id != null'>AND name = #{name}</if>"
-            + "<if test='project_id !=null'>AND project_id = #{projectId}</if>"
-            + "<if test='account_id !=null'>AND account_id = #{accountId}</if>"
-            + "<if test='permission !=null'>AND permission = #{permission}</if>"
-            + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart}</if>"
-            + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd}</if>"
-            + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart}</if>"
-            + "<if test='updateTimeEnd !=null'>AND create_time &lt; #{updateTimeEnd}</if>"
+            + "<if test='id != null'>AND name = #{name} </if>"
+            + "<if test='projectId !=null'>AND project_id = #{projectId} </if>"
+            + "<if test='accountId !=null'>AND account_id = #{accountId} </if>"
+            + "<if test='permission !=null'>AND permission = #{permission} </if>"
+            + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart} </if>"
+            + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd} </if>"
+            + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart} </if>"
+            + "<if test='updateTimeEnd !=null'>AND create_time &lt; #{updateTimeEnd} </if>"
             + "</where>"
             + "</script>")
     List<ProjectAccount> findNotNull(ProjectAccountQuery projectAccountQuery);
@@ -40,9 +40,9 @@ public interface ProjectAccountDao {
     @Delete("DELETE FROM project_account WHERE project_id = #{projectId}")
     int deleteByProjectId(Integer id);
 
-    @Update("UPDATE project_account SET permission = #{permission} WHERE project_id = #{id} AND account_id=#{accountId}")
+    @Update("UPDATE project_account SET permission = #{permission} WHERE project_id = #{projectId} AND account_id=#{accountId}")
     int updatePermission(ProjectAccount projectAccount);
 
     @Delete("DELETE FROM project_account WHERE project_id = #{projectId} AND account_id = #{accountId}")
-    int deleteByProjectIdAndAccountId(Integer projectId, Integer accountId);
+    int deleteByProjectIdAndAccountId(@Param("projectId")Integer projectId, @Param("accountId")Integer accountId);
 }

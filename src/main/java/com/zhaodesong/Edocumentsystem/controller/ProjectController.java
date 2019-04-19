@@ -11,6 +11,9 @@ import com.zhaodesong.Edocumentsystem.service.DocumentService;
 import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
 import com.zhaodesong.Edocumentsystem.service.ProjectService;
 import com.zhaodesong.Edocumentsystem.util.FileUtils;
+import com.zhaodesong.Edocumentsystem.vo.AccountForManage;
+import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
+import com.zhaodesong.Edocumentsystem.vo.ProjectWithPower;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpSession;
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +67,7 @@ public class ProjectController extends BaseController {
         projectAccount.setAccountId(accountId);
         projectAccount.setProjectId(project.getId());
         // TODO 根据用户ID设置不同的权限
-        projectAccount.setPermission("11");
+        projectAccount.setPermission("111");
 
         // 磁盘中创建对应文件夹
         FileUtils.createDir(FOLDER + project.getId());
@@ -83,24 +87,24 @@ public class ProjectController extends BaseController {
     TODO 未进行权限验证
      */
     @RequestMapping(value = "/deleteProject")
-    public String deleteProject() {
-        if (!sessionCheck()) {
-            request.setAttribute("msg", "登录失效，请重新登录");
-            return "index";
-        }
-
+    @ResponseBody
+    public Object deleteProject() {
+        Map<String, Object> result = new HashMap<>();
         int projectId = Integer.parseInt(request.getParameter("pid"));
         Integer accountId = (Integer) session.getAttribute("accountId");
         projectService.deleteById(projectId);
         projectAccountService.deleteByProjectId(projectId);
         documentService.deleteByProjectId(projectId);
-        request.setAttribute("msg", "删除成功");
-        ProjectQuery projectQuery = new ProjectQuery();
-        projectQuery.setCreateAccount(accountId);
-        // 查询该用户的项目信息
-        List<Project> projectList = projectService.getProjectNotNull(projectQuery);
-        request.setAttribute("project", projectList);
-        return "login_success";
+
+        FileUtils.deleteDir(new File(FOLDER + projectId));
+
+//        // 查询该用户加入的项目
+//        List<ProjectWithPower> projectList = projectService.getProjectPowerByAccountId(accountId);
+//        request.setAttribute("project", projectList);
+
+        result.put("msg", "删除成功");
+        result.put("result", 1);
+        return result;
     }
 
     @RequestMapping("/toProject")
@@ -110,12 +114,49 @@ public class ProjectController extends BaseController {
             return "index";
         }
         Integer projectId = Integer.parseInt(request.getParameter("pid"));
+        Integer accountId = (Integer) session.getAttribute("accountId");
         // 查询该项目下的所有文件
-        List<Document> documentList = documentService.getAllDocInfoByProjectId(projectId);
+        List<DocumentWithPower> documentList = documentService.getAllDocInfoByProjectId(projectId);
+        for (int i = 0; i < documentList.size(); i++) {
+            DocumentWithPower doc = documentList.get(i);
+            if (hasPermission(projectId, accountId, doc.getDocId())) {
+                doc.setIsEdit("1");
+            } else {
+                doc.setIsEdit("0");
+            }
+        }
 
         request.setAttribute("documents", documentList);
         session.setAttribute("projectId", projectId);
         return "project";
+    }
+
+    @RequestMapping("/toSingleFolder")
+    public String toSingleFolder() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
+            return "index";
+        }
+        Integer projectId = (Integer) session.getAttribute("projectId");
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        Long docId = Long.parseLong(request.getParameter("docId"));
+        Byte level = Byte.valueOf(request.getParameter("level"));
+        // 查询该项目下的所有文件
+        List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId, level);
+        for (int i = 0; i < documentList.size(); i++) {
+            DocumentWithPower doc = documentList.get(i);
+            if (hasPermission(projectId, accountId, doc.getDocId())) {
+                doc.setIsEdit("1");
+            } else {
+                doc.setIsEdit("0");
+            }
+        }
+
+        request.setAttribute("documents", documentList);
+        request.setAttribute("parentId", docId);
+        request.setAttribute("level", level + 1);
+        request.setAttribute("title", "流云文档");
+        return "single_folder";
     }
 
     @RequestMapping("/toLoginSuccess")
@@ -128,30 +169,87 @@ public class ProjectController extends BaseController {
         Account account = accountService.getById(accountId);
         request.setAttribute("nickName", account.getNickName());
         // 查询该用户加入的项目
-        List<ProjectAccount> projectAccountList = projectAccountService.getProjectAccountByAccountId(accountId);
-        if (projectAccountList != null || projectAccountList.size() == 0) {
-            List<Project> projectList = new ArrayList<>();
-            for (int i = 0; i < projectAccountList.size(); i++) {
-                projectList.add(projectService.getProjectById(projectAccountList.get(i).getProjectId()));
-            }
-            request.setAttribute("project", projectList);
-        }
+        List<ProjectWithPower> projectList = projectService.getProjectPowerByAccountId(accountId);
+        request.setAttribute("project", projectList);
         return "login_success";
     }
 
-//    @RequestMapping("/toLoginSuccess")
-//    @ResponseBody
-//    public Object projectRename() {
-//        if (!sessionCheck()) {
-//            request.setAttribute("msg", "登录失效，请重新登录");
-//            return "index";
-//        }
-//        Map<String, Object> result = new HashMap<>();
-//        Integer projectId = (Integer) session.getAttribute("projectId");
-//        String newName = request.getParameter("newName");
-//
-//        projectService.renameProject(projectId, newName);
-//        result.put("msg", "修改成功");
-//        return result;
-//    }
+    @RequestMapping("/renameProject")
+    @ResponseBody
+    public Object projectRename() {
+        Map<String, Object> result = new HashMap<>();
+        Integer projectId = (Integer) session.getAttribute("projectId");
+        String newName = request.getParameter("newName");
+
+        projectService.renameProject(projectId, newName);
+        result.put("msg", "修改成功");
+        result.put("result", 1);
+        return result;
+    }
+
+    @RequestMapping("toProjectManage")
+    public String toProjectManage() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
+            return "index";
+        }
+//        Integer accountId = (Integer) session.getAttribute("accountId");
+        Integer projectId = Integer.parseInt(request.getParameter("pid"));
+        session.setAttribute("projectId", projectId);
+        request.setAttribute("projectName", projectService.getProjectById(projectId).getName());
+
+        return "project_manage";
+    }
+
+    @RequestMapping("transferProject")
+    @ResponseBody
+    public Object transferProject() {
+        Map<String, Object> result = new HashMap<>();
+        int projectId = Integer.parseInt(request.getParameter("projectId"));
+        String transferMail = request.getParameter("transferMail");
+        Integer accountId = (Integer) session.getAttribute("accountId");
+
+
+        Account account = accountService.getByMail(transferMail);
+        if (account == null) {
+            result.put("msg", "该用户不存在");
+            result.put("result", 0);
+            return result;
+        }
+        ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, account.getId());
+        if (projectAccount == null) {
+            result.put("msg", "该用户未加入该项目");
+            result.put("result", 0);
+            return result;
+        }
+
+        projectService.changeCreateAccount(projectId, account.getId());
+
+        // 修改projectAccount
+        projectAccountService.transferProject(projectId, accountId, account.getId());
+        result.put("msg", "转让成功");
+        result.put("result", 1);
+        return result;
+    }
+
+    private boolean hasPermission(Integer projectId, Integer accountId, Long docId) {
+        // 判断是否为高权限者
+        ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, accountId);
+        String p = projectAccount.getPermission();
+        if ("11".equals(p)) {
+            return true;
+        }
+
+        // 判断是否为文件拥有者
+        Document document = documentService.getAllDocInfoByDocId(docId).get(0);
+        if (!document.getAccountIdCreate().equals(accountId)) {
+            return true;
+        }
+
+        // 判断文档本身权限和账户权限
+        if (document.getPower() == 1 && "01".equals(p)) {
+            return true;
+        }
+        return false;
+    }
 }

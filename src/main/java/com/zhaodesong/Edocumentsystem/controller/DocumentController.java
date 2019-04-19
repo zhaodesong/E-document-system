@@ -2,9 +2,11 @@ package com.zhaodesong.Edocumentsystem.controller;
 
 import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Document;
+import com.zhaodesong.Edocumentsystem.po.ProjectAccount;
 import com.zhaodesong.Edocumentsystem.service.DocumentService;
 import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
 import com.zhaodesong.Edocumentsystem.util.FileUtils;
+import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,31 +30,8 @@ import java.util.Map;
 @Controller
 @Slf4j
 public class DocumentController extends BaseController {
-
-
-
     @Autowired
     private DocumentService documentService;
-    @Autowired
-    private ProjectAccountService projectAccountService;
-
-    @RequestMapping("/toSingleFolder")
-    public String toSingleFolder() {
-        if (!sessionCheck()) {
-            request.setAttribute("msg", "登录失效，请重新登录");
-            return "index";
-        }
-        Long docId = Long.parseLong(request.getParameter("docId"));
-        Byte level = Byte.valueOf(request.getParameter("level"));
-        // 查询该项目下的所有文件
-        List<Document> documentList = documentService.getAllDocInfoByParentId(docId, level);
-
-        request.setAttribute("documents", documentList);
-        request.setAttribute("parentId", docId);
-        request.setAttribute("level", level + 1);
-        request.setAttribute("title", "流云文档");
-        return "single_folder";
-    }
 
     @RequestMapping("/upload")
     public String fileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
@@ -289,23 +268,20 @@ public class DocumentController extends BaseController {
         return "history_version";
     }
 
-//    @RequestMapping()
-//    @ResponseBody
-//    public Object changePermission() {
-//        Map<String, Object> result = new HashMap<>();
-//        Integer projectId = (Integer) session.getAttribute("projectId");
-//        Integer accountId = (Integer) session.getAttribute("accountId");
-//        Long docId = Long.parseLong(request.getParameter("docId"));
-//        Integer power = Integer.parseInt(request.getParameter("power"));
-//
-////        if (!hasPermission(projectId, accountId)) {
-////            result.put("msg", "没有权限，修改失败");
-////            return result;
-////        }
-//        documentService.changePermission(docId, power);
-//        result.put("msg", "修改成功");
-//        return result;
-//    }
+    @RequestMapping("/changeDocPower")
+    @ResponseBody
+    public Object changePermission() {
+        Map<String, Object> result = new HashMap<>();
+        Integer projectId = (Integer) session.getAttribute("projectId");
+        Integer accountId = (Integer) session.getAttribute("accountId");
+        Long docId = Long.parseLong(request.getParameter("docId"));
+        Integer power = Integer.parseInt(request.getParameter("power"));
+
+        documentService.changePermission(docId, power);
+        result.put("msg", "修改成功");
+        result.put("result", 1);
+        return result;
+    }
 
 
     private String getCopyName(String fileName) {
@@ -327,7 +303,5 @@ public class DocumentController extends BaseController {
         return newName + oldName.substring(index);
     }
 
-//    private boolean hasPermission(Integer projectId, Integer accountId) {
-//
-//    }
+
 }

@@ -5,6 +5,7 @@ import com.zhaodesong.Edocumentsystem.po.Document;
 import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.query.DocumentQuery;
 import com.zhaodesong.Edocumentsystem.service.DocumentService;
+import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
 import org.apache.ibatis.ognl.InappropriateExpressionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,7 +105,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<Document> getAllDocInfoByProjectId(Integer projectId) {
+    public List<DocumentWithPower> getAllDocInfoByProjectId(Integer projectId) {
         return documentDao.getAllDocInfoByProjectId(projectId,(byte)0);
     }
 
@@ -114,7 +115,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<Document> getAllDocInfoByParentId(Long parentId,Byte level) {
+    public List<DocumentWithPower> getAllDocInfoByParentId(Long parentId,Byte level) {
         return documentDao.getAllDocInfoByParentId(parentId,(byte)(level+1));
     }
 
