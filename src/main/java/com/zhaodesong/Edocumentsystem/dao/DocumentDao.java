@@ -44,23 +44,36 @@ public interface DocumentDao {
     @Delete("DELETE FROM document WHERE project_id = #{projectId}")
     int deleteByProjectId(Integer projectId);
 
-    @Delete("DELETE FROM document WHERE doc_id = #{projectId}")
+    @Delete("DELETE FROM document WHERE doc_id = #{docId}")
     int deleteByDocId(Long docId);
 
+    @Update("UPDATE document SET del_flag = 1 WHERE doc_id = #{docId}")
+    int recycleDeleteDirectlyByDocId(Long docId);
+
+    @Update("UPDATE document SET del_flag = 2 WHERE doc_id = #{docId}")
+    int recycleDeleteIndirectlyByDocId(Long docId);
+
+    @Update("UPDATE document SET del_flag = 0 WHERE doc_id = #{docId}")
+    int recoveryDeleteByDocId(Long docId);
+
     @Update("UPDATE document SET power=#{power} WHERE doc_id=#{docId}")
-    int changePermission(@Param("docId")Long docId, @Param("power")Integer power);
+    int changePermission(@Param("docId") Long docId, @Param("power") Integer power);
 
     @Select("SELECT MAX(doc_id) FROM document")
     Long getMaxDocId();
 
-    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND d.level=#{level} AND d.version = " +
-            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND project_id=#{projectId} AND level=#{level})")
-    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId")Integer projectId, @Param("level")Byte level);
+    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND d.level=#{level} AND del_flag = #{delFlag} AND d.version = " +
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND project_id=#{projectId} AND level=#{level} AND del_flag = #{delFlag})")
+    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId") Integer projectId, @Param("level") Byte level, @Param("delFlag") Integer delFlag);
 
-    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND d.level=#{level} AND d.version = " +
-            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND level=#{level})")
-    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId")Long parentId,@Param("level")Byte level);
+    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND d.level=#{level} AND del_flag = 0 AND d.version = " +
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND level=#{level}) AND del_flag = 0")
+    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId") Long parentId, @Param("level") Byte level);
+
+    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND del_flag = 1 AND d.version = " +
+            "(SELECT max(version) FROM document WHERE project_id=#{projectId} AND d.doc_id = doc_id AND del_flag = 1)")
+    List<Document> getAllDelectDocByProjectId(Integer projectId);
 
     @Update("UPDATE document SET name=#{name} WHERE doc_id=#{docId}")
-    int renameByDocId(@Param("docId")Long docId, @Param("name")String name);
+    int renameByDocId(@Param("docId") Long docId, @Param("name") String name);
 }

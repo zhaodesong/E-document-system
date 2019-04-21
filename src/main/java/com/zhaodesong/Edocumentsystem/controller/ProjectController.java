@@ -104,7 +104,7 @@ public class ProjectController extends BaseController {
     }
 
     @RequestMapping("/toProject")
-    public String project() {
+    public String toProject() {
         if (!sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
@@ -112,7 +112,7 @@ public class ProjectController extends BaseController {
         Integer projectId = Integer.parseInt(request.getParameter("pid"));
         Integer accountId = (Integer) session.getAttribute("accountId");
         // 查询该项目下的所有文件
-        List<DocumentWithPower> documentList = documentService.getAllDocInfoByProjectId(projectId);
+        List<DocumentWithPower> documentList = documentService.getAllDocInfoByProjectId(projectId, 0);
         for (int i = 0; i < documentList.size(); i++) {
             DocumentWithPower doc = documentList.get(i);
             if (hasPermission(projectId, accountId, doc.getDocId())) {
@@ -169,6 +169,22 @@ public class ProjectController extends BaseController {
         request.setAttribute("project", projectList);
         return "login_success";
     }
+
+    @RequestMapping("/toRecycleBin")
+    public String project() {
+        if (!sessionCheck()) {
+            request.setAttribute("msg", "登录失效，请重新登录");
+            return "index";
+        }
+        Integer projectId = Integer.parseInt(request.getParameter("pid"));
+        // 查询该项目下的所有文件
+        List<Document> documentList = documentService.getAllDelectDocByProjectId(projectId);
+
+        request.setAttribute("documents", documentList);
+        session.setAttribute("projectId", projectId);
+        return "recycle_bin";
+    }
+
 
     @RequestMapping("/renameProject")
     @ResponseBody
@@ -237,7 +253,7 @@ public class ProjectController extends BaseController {
         }
 
         // 判断是否为文件拥有者
-        Document document = documentService.getAllDocInfoByDocId(docId).get(0);
+        Document document = documentService.getAllDocInfoByDocId(docId, 0).get(0);
         if (!document.getAccountIdCreate().equals(accountId)) {
             return true;
         }

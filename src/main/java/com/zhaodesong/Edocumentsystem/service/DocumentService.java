@@ -27,17 +27,25 @@ public interface DocumentService {
 
     int deleteByDocId(Long docId);
 
+    int recycleDeleteDirectlyByDocId(Long docId);
+
+    int recycleDeleteIndirectlyByDocId(Long docId);
+
+    int recoveryDeleteByDocId(Long docId);
+
     List<Document> getDeleteInfoByDocId(Long docId);
 
     List<Document> getDeleteInfoByParentId(Long parentId);
 
-    List<Document> getAllDocInfoByDocId(Long docId);
+    List<Document> getAllDocInfoByDocId(Long docId, Integer delFlag);
 
-    List<DocumentWithPower> getAllDocInfoByProjectId(Integer projectId);
+    List<DocumentWithPower> getAllDocInfoByProjectId(Integer projectId, Integer delFlag);
 
     int renameByDocId(Long docId, String name);
 
     List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Byte level);
+
+    List<Document> getAllDelectDocByProjectId(Integer projectId);
 
     int changePermission(Long docId, Integer power);
 }

@@ -75,6 +75,21 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
+    public int recycleDeleteDirectlyByDocId(Long docId) {
+        return documentDao.recycleDeleteDirectlyByDocId(docId);
+    }
+
+    @Override
+    public int recycleDeleteIndirectlyByDocId(Long docId) {
+        return documentDao.recycleDeleteIndirectlyByDocId(docId);
+    }
+
+    @Override
+    public int recoveryDeleteByDocId(Long docId) {
+        return documentDao.recoveryDeleteByDocId(docId);
+    }
+
+    @Override
     public List<Document> getDeleteInfoByDocId(Long docId) {
         DocumentQuery query = new DocumentQuery();
         query.setDocId(docId);
@@ -90,23 +105,20 @@ public class DocumentServiceImpl implements DocumentService {
             }
         }
 
-        DocumentQuery query2 = new DocumentQuery();
-        query2.setDocId(parentId);
-        List<Document> document = documentDao.findNotNull(query2);
-        result.add(document.get(0));
         return result;
     }
 
     @Override
-    public List<Document> getAllDocInfoByDocId(Long docId) {
+    public List<Document> getAllDocInfoByDocId(Long docId, Integer delFlag) {
         DocumentQuery query = new DocumentQuery();
         query.setDocId(docId);
+        query.setDelFlag(delFlag);
         return documentDao.findNotNull(query);
     }
 
     @Override
-    public List<DocumentWithPower> getAllDocInfoByProjectId(Integer projectId) {
-        return documentDao.getAllDocInfoByProjectId(projectId,(byte)0);
+    public List<DocumentWithPower> getAllDocInfoByProjectId(Integer projectId, Integer delFlag) {
+        return documentDao.getAllDocInfoByProjectId(projectId, (byte) 0, delFlag);
     }
 
     @Override
@@ -115,19 +127,24 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<DocumentWithPower> getAllDocInfoByParentId(Long parentId,Byte level) {
-        return documentDao.getAllDocInfoByParentId(parentId,(byte)(level+1));
+    public List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Byte level) {
+        return documentDao.getAllDocInfoByParentId(parentId, (byte) (level + 1));
+    }
+
+    @Override
+    public List<Document> getAllDelectDocByProjectId(Integer projectId) {
+        return documentDao.getAllDelectDocByProjectId(projectId);
     }
 
     @Override
     public int changePermission(Long docId, Integer power) {
-        return documentDao.changePermission(docId,power);
+        return documentDao.changePermission(docId, power);
     }
 
     private List<Document> getDeleteFile(Long parentId) {
-        DocumentQuery query1 = new DocumentQuery();
-        query1.setParentId(parentId);
-        List<Document> documentList = documentDao.findNotNull(query1);
-        return documentList;
+        DocumentQuery query = new DocumentQuery();
+        query.setParentId(parentId);
+        query.setDelFlag(0);
+        return documentDao.findNotNull(query);
     }
 }

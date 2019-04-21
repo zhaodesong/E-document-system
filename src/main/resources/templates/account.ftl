@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>账户管理</title>
     <link rel="stylesheet" type="text/css" href="/css/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="/css/common.css">
     <script src="/js/jquery.min.js"></script>

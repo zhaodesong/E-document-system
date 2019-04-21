@@ -5,6 +5,7 @@ import com.zhaodesong.Edocumentsystem.po.Document;
 import com.zhaodesong.Edocumentsystem.po.ProjectAccount;
 import com.zhaodesong.Edocumentsystem.service.DocumentService;
 import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
+import com.zhaodesong.Edocumentsystem.service.impl.DocumentServiceImpl;
 import com.zhaodesong.Edocumentsystem.util.FileUtils;
 import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
 import lombok.extern.slf4j.Slf4j;
@@ -77,7 +78,7 @@ public class DocumentController extends BaseController {
         if (flag == 1) {
             return "redirect:/toProject?pid=" + projectId;
         } else {
-            return "redirect:/toSingleFolder?docId=" + parentId + "&level=" + level;
+            return "redirect:/toSingleFolder?docId=" + parentId + "&level=" + (level - 1);
         }
     }
 
@@ -113,6 +114,9 @@ public class DocumentController extends BaseController {
     public String fileUpdate(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
+        Long parentId = Long.parseLong(request.getParameter("parentId"));
+        Integer level = Integer.parseInt(request.getParameter("level"));
+        int flag = Byte.valueOf(request.getParameter("flag"));
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "请选择要上传的文件");
             return "redirect:/toProject?pid=" + projectId;
@@ -146,22 +150,26 @@ public class DocumentController extends BaseController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return "redirect:/toProject?pid=" + projectId;
+        if (flag == 1) {
+            return "redirect:/toProject?pid=" + projectId;
+        } else {
+            return "redirect:/toSingleFolder?docId=" + parentId + "&level=" + (level - 1);
+        }
     }
 
-    // TODO 文件删除回收站功能
     @RequestMapping("/fileDelete")
     @ResponseBody
     public Object fileDelete() {
         Map<String, Object> res = new HashMap<>();
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
-        boolean isFolder = documentService.getAllDocInfoByDocId(docId).get(0).getType();
-        List<Document> documentList = new ArrayList<>();
+        List<Document> deleteDocList = documentService.getAllDocInfoByDocId(docId, 1);
+        boolean isFolder = deleteDocList.get(0).getType();
+        List<Document> documentList;
         if (isFolder) {
             documentList = documentService.getDeleteInfoByParentId(docId);
         } else {
-            documentList = documentService.getDeleteInfoByDocId(docId);
+            documentList = deleteDocList;
         }
 
         for (int i = 0; i < documentList.size(); i++) {
@@ -170,6 +178,64 @@ public class DocumentController extends BaseController {
             File deleteFile = new File(FOLDER + projectId + "//" + fileName);
             FileUtils.deleteDir(deleteFile);
         }
+        res.put("result", true);
+        res.put("msg", "删除成功");
+        res.put("docId", docId);
+        return res;
+    }
+
+    @RequestMapping("/fileDeleteRecycle")
+    @ResponseBody
+    public Object fileDeleteRecycle() {
+        Map<String, Object> res = new HashMap<>();
+        Integer projectId = (Integer) session.getAttribute("projectId");
+        Long docId = Long.parseLong(request.getParameter("docId"));
+        List<Document> deleteDocList = documentService.getAllDocInfoByDocId(docId, 0);
+        boolean isFolder = deleteDocList.get(0).getType();
+
+        if (isFolder) {
+            // 删除间接删除的部分
+            List<Document> documentList = documentService.getDeleteInfoByParentId(docId);
+            for (Document document : documentList) {
+                documentService.recycleDeleteIndirectlyByDocId(document.getDocId());
+            }
+            // 删除直接删除的部分
+            documentService.recycleDeleteDirectlyByDocId(deleteDocList.get(0).getDocId());
+        } else {
+            documentService.recycleDeleteDirectlyByDocId(deleteDocList.get(0).getDocId());
+        }
+
+        res.put("result", true);
+        res.put("msg", "删除成功");
+        res.put("docId", docId);
+        return res;
+    }
+
+    @RequestMapping("/fileRecovery")
+    @ResponseBody
+    public Object fileRecovery() {
+        Map<String, Object> res = new HashMap<>();
+        Integer projectId = (Integer) session.getAttribute("projectId");
+        Long docId = Long.parseLong(request.getParameter("docId"));
+        List<Document> recoveryDocList = documentService.getAllDocInfoByDocId(docId, 1);
+        boolean isFolder = recoveryDocList.get(0).getType();
+
+        if (isFolder) {
+            // 删除直接删除的部分
+            List<Document> documentList = documentService.getDeleteInfoByParentId(docId);
+            for (Document document : documentList) {
+                documentService.recoveryDeleteByDocId(document.getDocId());
+            }
+            // 删除间接删除的部分
+            for (Document document : recoveryDocList) {
+                documentService.recoveryDeleteByDocId(document.getDocId());
+            }
+        } else {
+            for (Document document : recoveryDocList) {
+                documentService.recoveryDeleteByDocId(document.getDocId());
+            }
+        }
+
         res.put("result", true);
         res.put("msg", "删除成功");
         res.put("docId", docId);
@@ -263,7 +329,7 @@ public class DocumentController extends BaseController {
     @RequestMapping("/historyVersion")
     public String getHistoryVersion() {
         Long docId = Long.parseLong(request.getParameter("docId"));
-        List<Document> documentList = documentService.getAllDocInfoByDocId(docId);
+        List<Document> documentList = documentService.getAllDocInfoByDocId(docId, 0);
         request.setAttribute("documentList", documentList);
         return "history_version";
     }
