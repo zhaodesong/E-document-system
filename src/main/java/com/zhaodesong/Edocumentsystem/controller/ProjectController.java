@@ -5,13 +5,11 @@ import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.po.Document;
 import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.po.ProjectAccount;
-import com.zhaodesong.Edocumentsystem.query.ProjectQuery;
 import com.zhaodesong.Edocumentsystem.service.AccountService;
 import com.zhaodesong.Edocumentsystem.service.DocumentService;
 import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
 import com.zhaodesong.Edocumentsystem.service.ProjectService;
 import com.zhaodesong.Edocumentsystem.util.FileUtils;
-import com.zhaodesong.Edocumentsystem.vo.AccountForManage;
 import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
 import com.zhaodesong.Edocumentsystem.vo.ProjectWithPower;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpSession;
 import java.io.File;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -105,7 +100,7 @@ public class ProjectController extends BaseController {
 
     @RequestMapping("/toProject")
     public String toProject() {
-        if (!sessionCheck()) {
+        if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
@@ -129,7 +124,7 @@ public class ProjectController extends BaseController {
 
     @RequestMapping("/toSingleFolder")
     public String toSingleFolder() {
-        if (!sessionCheck()) {
+        if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
@@ -157,7 +152,7 @@ public class ProjectController extends BaseController {
 
     @RequestMapping("/toLoginSuccess")
     public String toLoginSuccess() {
-        if (!sessionCheck()) {
+        if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
@@ -172,7 +167,7 @@ public class ProjectController extends BaseController {
 
     @RequestMapping("/toRecycleBin")
     public String project() {
-        if (!sessionCheck()) {
+        if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
@@ -201,7 +196,7 @@ public class ProjectController extends BaseController {
 
     @RequestMapping("toProjectManage")
     public String toProjectManage() {
-        if (!sessionCheck()) {
+        if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }

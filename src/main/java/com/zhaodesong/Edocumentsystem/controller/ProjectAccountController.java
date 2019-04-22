@@ -4,21 +4,17 @@ import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Account;
 import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.po.ProjectAccount;
-import com.zhaodesong.Edocumentsystem.query.ProjectQuery;
 import com.zhaodesong.Edocumentsystem.service.AccountService;
 import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
 import com.zhaodesong.Edocumentsystem.service.ProjectService;
-import com.zhaodesong.Edocumentsystem.util.FileUtils;
 import com.zhaodesong.Edocumentsystem.vo.AccountForManage;
 import com.zhaodesong.Edocumentsystem.vo.ProjectWithPower;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,7 +74,7 @@ public class ProjectAccountController extends BaseController {
 
     @RequestMapping("/deleteMember")
     public String deleteMember() {
-        if (!sessionCheck()) {
+        if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
@@ -122,7 +118,7 @@ public class ProjectAccountController extends BaseController {
 
     @RequestMapping("toAccountManage")
     public String toAccountManage() {
-        if (!sessionCheck()) {
+        if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
@@ -142,7 +138,7 @@ public class ProjectAccountController extends BaseController {
 
     @RequestMapping(value = "/quitProject")
     public String deleteProject() {
-        if (!sessionCheck()) {
+        if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }

@@ -10,6 +10,10 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+/**
+ * @author ZhaoDesong
+ * @date 2019-4-21 21:46
+ */
 @Configuration
 public class TomcatHttpConfig {
     @Value("${http-port}")
