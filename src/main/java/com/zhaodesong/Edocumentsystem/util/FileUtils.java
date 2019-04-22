@@ -1,7 +1,5 @@
 package com.zhaodesong.Edocumentsystem.util;
 
-import com.zhaodesong.Edocumentsystem.exception.FileException;
-
 import java.io.*;
 
 /**
@@ -9,54 +7,41 @@ import java.io.*;
  * @date 2019/4/2 13:52
  */
 public class FileUtils {
-    //文件重命名
-    public static boolean renameFile(String path, String oldname, String newname) {
-        //新的文件名和以前文件名不同时,才有必要进行重命名
-        if (oldname.equals(newname)) {
-            return true;
-        }
-        File oldfile = new File(path + "/" + oldname);
-        File newfile = new File(path + "/" + newname);
-        if (!oldfile.exists()) {
-            throw new FileException("重命名文件不存在");
-        }
-        //若在该目录下已经有一个文件和新文件名相同，则不允许重命名
-        if (newfile.exists()) {
-            throw new FileException("新文件名和其它文件冲突");
-        }
-        oldfile.renameTo(newfile);
-        return true;
-    }
 
-    //创建文件夹
-    public static boolean createDir(String destDirName) {
-        File dir = new File(destDirName);
+    /**
+     * 创建文件夹
+     *
+     * @param dirName 文件夹路径
+     * @return
+     */
+    public static boolean createDir(String dirName) {
+        File dir = new File(dirName);
         if (dir.exists()) {
-            throw new FileException("目标目录已存在");
-        }
-        if (!destDirName.endsWith(File.separator)) {
-            destDirName = destDirName + File.separator;
+            return false;
         }
         //创建目录
-        if (dir.mkdirs()) {
-            return true;
-        } else {
-            throw new FileException("创建目录失败");
-        }
+        return dir.mkdirs();
     }
 
-    //删除文件&文件夹
+    /**
+     * 删除文件或文件夹
+     *
+     * @param dir
+     * @return
+     */
     public static boolean deleteDir(File dir) {
         if (!dir.exists()) {
             return false;
         }
-        boolean success = true;
+        boolean success;
         if (dir.isDirectory()) {
             String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                success = deleteDir(new File(dir, children[i]));
-                if (!success) {
-                    return false;
+            if (children != null) {
+                for (String child : children) {
+                    success = deleteDir(new File(dir, child));
+                    if (!success) {
+                        return false;
+                    }
                 }
             }
             success = dir.delete();
@@ -66,7 +51,13 @@ public class FileUtils {
         return success;
     }
 
-    //复制文件
+    /**
+     * 复制文件
+     *
+     * @param sourceFile
+     * @param targetFile
+     * @throws IOException
+     */
     public static void copyFile(File sourceFile, File targetFile) throws IOException {
         // 新建文件输入流并对它进行缓冲
         FileInputStream input = new FileInputStream(sourceFile);

@@ -11,6 +11,8 @@ import java.io.Serializable;
 @Data
 public class AccountForManage implements Serializable {
 
+    private static final long serialVersionUID = 4911570964452103677L;
+
     private Integer id;
 
     private String mail;

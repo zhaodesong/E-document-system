@@ -5,8 +5,13 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * @author ZhaoDesong
+ * @date 2019-4-22 9:46
+ */
 @Data
 public class DocumentQuery implements Serializable {
+
     private static final long serialVersionUID = -1731054131432638704L;
 
     private Long id;

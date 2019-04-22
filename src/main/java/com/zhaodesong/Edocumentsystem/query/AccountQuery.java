@@ -5,6 +5,10 @@ import lombok.Data;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * @author ZhaoDesong
+ * @date 2019-4-22 9:46
+ */
 @Data
 public class AccountQuery implements Serializable {
 

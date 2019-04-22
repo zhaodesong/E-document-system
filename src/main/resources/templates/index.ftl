@@ -18,7 +18,7 @@
     <div class="column">
         <h2 class="ui teal image header">
             <div class="content">
-                登录到账号
+                登录
             </div>
         </h2>
         <form class="ui large form" action="/login" method="post">
