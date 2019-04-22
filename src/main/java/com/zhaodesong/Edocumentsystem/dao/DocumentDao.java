@@ -64,11 +64,11 @@ public interface DocumentDao {
 
     @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND d.level=#{level} AND del_flag = #{delFlag} AND d.version = " +
             "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND project_id=#{projectId} AND level=#{level} AND del_flag = #{delFlag})")
-    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId") Integer projectId, @Param("level") Byte level, @Param("delFlag") Integer delFlag);
+    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId") Integer projectId, @Param("level") Integer level, @Param("delFlag") Integer delFlag);
 
     @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND d.level=#{level} AND del_flag = 0 AND d.version = " +
-            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND level=#{level}) AND del_flag = 0")
-    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId") Long parentId, @Param("level") Byte level);
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND level=#{level} AND del_flag = 0)")
+    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId") Long parentId, @Param("level") Integer level);
 
     @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND del_flag = 1 AND d.version = " +
             "(SELECT max(version) FROM document WHERE project_id=#{projectId} AND d.doc_id = doc_id AND del_flag = 1)")
@@ -76,4 +76,11 @@ public interface DocumentDao {
 
     @Update("UPDATE document SET name=#{name} WHERE doc_id=#{docId}")
     int renameByDocId(@Param("docId") Long docId, @Param("name") String name);
+
+    @Update("UPDATE document SET parent_id=#{parentId}, level=#{level} WHERE doc_id=#{docId}")
+    int moveByDocId(@Param("docId") Long docId, @Param("parentId") Long parentId, @Param("level") Integer level);
+
+    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND del_flag = 0 AND d.version = " +
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND del_flag = 0")
+    List<Document> getDocInfoByParentId(@Param("parentId") Long parentId);
 }

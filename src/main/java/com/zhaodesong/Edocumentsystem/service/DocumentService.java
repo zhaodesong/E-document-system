@@ -1,10 +1,8 @@
 package com.zhaodesong.Edocumentsystem.service;
 
 import com.zhaodesong.Edocumentsystem.po.Document;
-import com.zhaodesong.Edocumentsystem.po.Project;
 import com.zhaodesong.Edocumentsystem.query.DocumentQuery;
 import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -43,9 +41,13 @@ public interface DocumentService {
 
     int renameByDocId(Long docId, String name);
 
-    List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Byte level);
+    List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Integer level);
 
     List<Document> getAllDelectDocByProjectId(Integer projectId);
 
     int changePermission(Long docId, Integer power);
+
+    int moveByDocId(Long docId, Long parentId, Integer level);
+
+    List<Document> getDocInfoByParentId(Long parentId);
 }

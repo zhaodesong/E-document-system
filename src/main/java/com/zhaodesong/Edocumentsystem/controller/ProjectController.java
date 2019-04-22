@@ -136,7 +136,7 @@ public class ProjectController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer accountId = (Integer) session.getAttribute("accountId");
         Long docId = Long.parseLong(request.getParameter("docId"));
-        Byte level = Byte.valueOf(request.getParameter("level"));
+        Integer level = Integer.valueOf(request.getParameter("level"));
         // 查询该项目下的所有文件
         List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId, level);
         for (int i = 0; i < documentList.size(); i++) {

@@ -39,7 +39,7 @@ public class DocumentController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long parentId = Long.parseLong(request.getParameter("parentId"));
         Integer level = Integer.parseInt(request.getParameter("level"));
-        int flag = Byte.valueOf(request.getParameter("flag"));
+        int flag = Integer.valueOf(request.getParameter("flag"));
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "请选择要上传的文件");
             if (flag == 1) {
@@ -116,7 +116,7 @@ public class DocumentController extends BaseController {
         Long docId = Long.parseLong(request.getParameter("docId"));
         Long parentId = Long.parseLong(request.getParameter("parentId"));
         Integer level = Integer.parseInt(request.getParameter("level"));
-        int flag = Byte.valueOf(request.getParameter("flag"));
+        int flag = Integer.valueOf(request.getParameter("flag"));
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "请选择要上传的文件");
             return "redirect:/toProject?pid=" + projectId;
@@ -242,9 +242,34 @@ public class DocumentController extends BaseController {
         return res;
     }
 
-//    public String fileMove() {
-//
-//    }
+    @RequestMapping("/fileMove")
+    @ResponseBody
+    public Object fileMove() {
+        Map<String, Object> result = new HashMap<>();
+        Integer projectId = (Integer) session.getAttribute("projectId");
+        Long docId = Long.parseLong(request.getParameter("docId"));
+        Long parentId = Long.parseLong(request.getParameter("parentId"));
+        Integer level = Integer.valueOf(request.getParameter("level"));
+
+        List<Document> moveDocList = documentService.getAllDocInfoByDocId(docId, 0);
+        boolean isFolder = moveDocList.get(0).getType();
+
+        if (isFolder) {
+            parentId = moveDocList.get(0).getParentId();
+            level = moveDocList.get(0).getLevel();
+            documentService.moveByDocId(docId, parentId, level);
+            move(docId, level);
+            // 修改直接查找的parentId和level
+            // 修改间接查找的level
+
+        } else {
+            documentService.moveByDocId(docId, parentId, level);
+
+        }
+        result.put("result", 1);
+        result.put("msg", "移动成功");
+        return result;
+    }
 
     @RequestMapping("/fileCopy")
     @ResponseBody
@@ -349,6 +374,24 @@ public class DocumentController extends BaseController {
         return result;
     }
 
+    @RequestMapping("/getSingleFolder")
+    @ResponseBody
+    public Object toSingleFolder() {
+        Map<String, Object> result = new HashMap<>();
+//        Integer projectId = (Integer) session.getAttribute("projectId");
+//        Integer accountId = (Integer) session.getAttribute("accountId");
+        Long docId = Long.parseLong(request.getParameter("docId"));
+        Integer level = Integer.valueOf(request.getParameter("level"));
+        // 查询该项目下的所有文件
+        List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId, level);
+
+        result.put("documents", documentList);
+        result.put("parentId", docId);
+        result.put("level", level + 1);
+        result.put("result", 1);
+        return result;
+    }
+
 
     private String getCopyName(String fileName) {
         int index = fileName.indexOf('.');
@@ -369,5 +412,15 @@ public class DocumentController extends BaseController {
         return newName + oldName.substring(index);
     }
 
-
+    private void move(Long parentId, Integer level) {
+        List<Document> docList = documentService.getDocInfoByParentId(parentId);
+        for (Document document : docList) {
+            if (document.getType()) {
+                documentService.moveByDocId(document.getDocId(), parentId, level + 1);
+                move(document.getDocId(), level + 1);
+            } else {
+                documentService.moveByDocId(document.getDocId(), parentId, level + 1);
+            }
+        }
+    }
 }

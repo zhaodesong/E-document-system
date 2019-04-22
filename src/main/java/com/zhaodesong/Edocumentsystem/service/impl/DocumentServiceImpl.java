@@ -118,7 +118,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<DocumentWithPower> getAllDocInfoByProjectId(Integer projectId, Integer delFlag) {
-        return documentDao.getAllDocInfoByProjectId(projectId, (byte) 0, delFlag);
+        return documentDao.getAllDocInfoByProjectId(projectId, 0, delFlag);
     }
 
     @Override
@@ -127,8 +127,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Byte level) {
-        return documentDao.getAllDocInfoByParentId(parentId, (byte) (level + 1));
+    public List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Integer level) {
+        return documentDao.getAllDocInfoByParentId(parentId,  (level + 1));
     }
 
     @Override
@@ -139,6 +139,16 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public int changePermission(Long docId, Integer power) {
         return documentDao.changePermission(docId, power);
+    }
+
+    @Override
+    public int moveByDocId(Long docId, Long parentId, Integer level) {
+        return documentDao.moveByDocId(docId, parentId, level);
+    }
+
+    @Override
+    public List<Document> getDocInfoByParentId(Long parentId) {
+        return documentDao.getDocInfoByParentId(parentId);
     }
 
     private List<Document> getDeleteFile(Long parentId) {

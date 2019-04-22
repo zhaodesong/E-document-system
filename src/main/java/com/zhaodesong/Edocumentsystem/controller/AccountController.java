@@ -131,7 +131,6 @@ public class AccountController extends BaseController {
         String newPwd = request.getParameter("newPwd");
 
         Account acc = accountService.getById(accountId);
-        System.out.println(oldPwd + "     " + acc.getPassword()  + "      " + DigestUtils.md5DigestAsHex(oldPwd.getBytes()));
         if (!acc.getPassword().equals(DigestUtils.md5DigestAsHex(oldPwd.getBytes()).toLowerCase())) {
             result.put("msg", "原密码不正确");
             result.put("result", 2);

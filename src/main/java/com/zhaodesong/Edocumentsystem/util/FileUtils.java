@@ -47,7 +47,7 @@ public class FileUtils {
 
     //删除文件&文件夹
     public static boolean deleteDir(File dir) {
-        if (!dir.exists()){
+        if (!dir.exists()) {
             return false;
         }
         boolean success = true;
