@@ -14,9 +14,13 @@
     <#list documentList! as doc>
         <div class="doc content" id="${doc.docId}">
             <p class="docName">${doc.name!}</p>
-            <p>时间：${doc.createTime!}</p>
+            <p>时间：
+                <#list doc.createTime?split("T") as name>
+                    ${name} &nbsp;
+                </#list>
+            </p>
             <#--下载-->
-            <button><a href="/download?did=${doc.docId}&dver=${doc.version}">下载</a></button>
+            <button class="ui button"><a href="/download?did=${doc.docId}&dver=${doc.version}">下载</a></button>
         </div>
         </br>
     </#list>

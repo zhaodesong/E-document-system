@@ -36,7 +36,6 @@
                                 <#else>
                                     <a href="/quitProject?pid=${p.id}" class="quitProject">退出该项目</a>
                                 </#if>
-
                             </div>
                         </div>
                     </div>
@@ -85,20 +84,31 @@
             data: {projectName: $("#create").val()},
             dataType: 'json',
             success: function (data) {
-                if (data.result == true) {
-                    var newProjectDiv = $("<div class='ui card projectDiv' id=" + data.project.id + ">" +
+                if (data.result === 1) {
+                    var newProjectDiv = "<div class='ui card projectDiv' id=" + data.project.id + ">" +
                         "<a class='pname' href='/toProject?pid=" + data.project.id + "'>" +
                         data.project.name +
                         "</a>" +
                         "<div class='content'>" +
-                        "<div class='meta'>" +
-                        "<a href='/toAccountManage?pid=" + data.project.id + "' class='accountManage'>成员管理</a>" +
-                        "<a href='/deleteProject?pid=" + data.project.id + "' class='deleteProject'>删除</a>" +
+                        "<div class='meta'>";
+                    if (data.project.power === "111") {
+                        newProjectDiv = newProjectDiv +
+                            "<a href='toAccountManage?pid=" + data.project.id + "' class='accountManage'>成员管理</a>" +
+                            "<a href='toProjectManage?pid=" + data.project.id + "' class='accountManage'>项目管理</a>";
+                    } else if (data.project.power === "11") {
+                        newProjectDiv = newProjectDiv +
+                            "<a href='toAccountManage?pid=" + data.project.id + "' class='accountManage'>成员管理</a>";
+                    } else {
+                        newProjectDiv = newProjectDiv +
+                            "<a href='quitProject?pid=" + data.project.id + "' class='quitProject'>退出该项目</a>";
+                    }
+                    newProjectDiv = newProjectDiv +
                         "</div>" +
                         "</div>" +
-                        "</div>");
+                        "</div>";
                     $('.noitem').remove();
                     $('.projectlist').append(newProjectDiv);
+                    console.log(data.project.power);
                 } else {
                     alert('创建失败');
                 }

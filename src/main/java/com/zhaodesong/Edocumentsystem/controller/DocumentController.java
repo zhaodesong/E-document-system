@@ -38,14 +38,13 @@ public class DocumentController extends BaseController {
     public String fileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long parentId = Long.parseLong(request.getParameter("parentId"));
-        Integer level = Integer.parseInt(request.getParameter("level"));
         int flag = Integer.valueOf(request.getParameter("flag"));
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "请选择要上传的文件");
             if (flag == 1) {
                 return "redirect:/toProject?pid=" + projectId;
             } else {
-                return "redirect:/toSingleFolder?docId=" + parentId + "&level=" + level;
+                return "redirect:/toSingleFolder?docId=" + parentId;
             }
         }
         try {
@@ -59,7 +58,6 @@ public class DocumentController extends BaseController {
             document.setAccountIdModify((Integer) session.getAttribute("accountId"));
             document.setType(false);
             document.setParentId(parentId);
-            document.setLevel(level);
             document.setPower(1);
             document.setDelFlag(0);
             documentService.insert(document);
@@ -78,7 +76,7 @@ public class DocumentController extends BaseController {
         if (flag == 1) {
             return "redirect:/toProject?pid=" + projectId;
         } else {
-            return "redirect:/toSingleFolder?docId=" + parentId + "&level=" + (level - 1);
+            return "redirect:/toSingleFolder?docId=" + parentId;
         }
     }
 
@@ -91,7 +89,7 @@ public class DocumentController extends BaseController {
         File file = new File(FOLDER + projectId + "//" + documentId + "_" + documentVersion);
         if (file.exists()) {
             // 在数据库中查询该文件的原文件名
-            String fileName = documentService.getNameByDocId(Long.parseLong(documentId));
+            String fileName = documentService.getNameByDocIdAndVersion(Long.parseLong(documentId), Integer.parseInt(documentVersion));
             response.setContentType("application/force-download");// 设置强制下载不打开
             response.addHeader("Content-Disposition", "attachment;fileName=" + URLEncoder.encode(fileName, "UTF-8"));
             byte[] buffer = new byte[1024];
@@ -115,7 +113,6 @@ public class DocumentController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
         Long parentId = Long.parseLong(request.getParameter("parentId"));
-        Integer level = Integer.parseInt(request.getParameter("level"));
         int flag = Integer.valueOf(request.getParameter("flag"));
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "请选择要上传的文件");
@@ -134,7 +131,6 @@ public class DocumentController extends BaseController {
             document.setAccountIdModify((Integer) session.getAttribute("accountId"));
             document.setType(false);
             document.setParentId(latestDoc.getParentId());
-            document.setLevel(latestDoc.getLevel());
             document.setPower(latestDoc.getPower());
             document.setDelFlag(latestDoc.getDelFlag());
             documentService.insert(document);
@@ -153,7 +149,7 @@ public class DocumentController extends BaseController {
         if (flag == 1) {
             return "redirect:/toProject?pid=" + projectId;
         } else {
-            return "redirect:/toSingleFolder?docId=" + parentId + "&level=" + (level - 1);
+            return "redirect:/toSingleFolder?docId=" + parentId;
         }
     }
 
@@ -178,7 +174,8 @@ public class DocumentController extends BaseController {
             File deleteFile = new File(FOLDER + projectId + "//" + fileName);
             FileUtils.deleteDir(deleteFile);
         }
-        res.put("result", true);
+        documentService.deleteByDocId(deleteDocList.get(0).getDocId());
+        res.put("result", 1);
         res.put("msg", "删除成功");
         res.put("docId", docId);
         return res;
@@ -205,7 +202,7 @@ public class DocumentController extends BaseController {
             documentService.recycleDeleteDirectlyByDocId(deleteDocList.get(0).getDocId());
         }
 
-        res.put("result", true);
+        res.put("result", 1);
         res.put("msg", "删除成功");
         res.put("docId", docId);
         return res;
@@ -236,12 +233,13 @@ public class DocumentController extends BaseController {
             }
         }
 
-        res.put("result", true);
+        res.put("result", 1);
         res.put("msg", "删除成功");
         res.put("docId", docId);
         return res;
     }
 
+    // TODO
     @RequestMapping("/fileMove")
     @ResponseBody
     public Object fileMove() {
@@ -249,21 +247,16 @@ public class DocumentController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
         Long parentId = Long.parseLong(request.getParameter("parentId"));
-        Integer level = Integer.valueOf(request.getParameter("level"));
 
         List<Document> moveDocList = documentService.getAllDocInfoByDocId(docId, 0);
         boolean isFolder = moveDocList.get(0).getType();
 
         if (isFolder) {
             parentId = moveDocList.get(0).getParentId();
-            level = moveDocList.get(0).getLevel();
-            documentService.moveByDocId(docId, parentId, level);
-            move(docId, level);
-            // 修改直接查找的parentId和level
-            // 修改间接查找的level
-
+            documentService.moveByDocId(docId, parentId);
+            move(docId);
         } else {
-            documentService.moveByDocId(docId, parentId, level);
+            documentService.moveByDocId(docId, parentId);
 
         }
         result.put("result", 1);
@@ -288,7 +281,6 @@ public class DocumentController extends BaseController {
         destDoc.setAccountIdModify((Integer) session.getAttribute("accountId"));
         destDoc.setType(false);
         destDoc.setParentId(srcDoc.getParentId());
-        destDoc.setLevel(srcDoc.getLevel());
         destDoc.setPower(srcDoc.getPower());
         destDoc.setDelFlag(srcDoc.getDelFlag());
         documentService.insert(destDoc);
@@ -301,7 +293,7 @@ public class DocumentController extends BaseController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        result.put("result", true);
+        result.put("result", 1);
         result.put("document", destDoc);
         return result;
     }
@@ -319,7 +311,7 @@ public class DocumentController extends BaseController {
         String fullNewName = getNewName(oldName, newName, type);
         documentService.renameByDocId(docId, fullNewName);
 
-        result.put("result", true);
+        result.put("result", 1);
         result.put("name", fullNewName);
         return result;
     }
@@ -331,7 +323,6 @@ public class DocumentController extends BaseController {
         String folderName = request.getParameter("folderName");
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long parentId = Long.parseLong(request.getParameter("parentId"));
-        Integer level = Integer.parseInt(request.getParameter("level"));
         Document document = new Document();
         document.setDocId(documentService.getMaxDocId() + 1);
         document.setProjectId(projectId);
@@ -341,7 +332,6 @@ public class DocumentController extends BaseController {
         document.setAccountIdModify((Integer) session.getAttribute("accountId"));
         document.setType(true);
         document.setParentId(parentId);
-        document.setLevel(level);
         document.setPower(1);
         document.setDelFlag(0);
         documentService.insert(document);
@@ -381,13 +371,11 @@ public class DocumentController extends BaseController {
 //        Integer projectId = (Integer) session.getAttribute("projectId");
 //        Integer accountId = (Integer) session.getAttribute("accountId");
         Long docId = Long.parseLong(request.getParameter("docId"));
-        Integer level = Integer.valueOf(request.getParameter("level"));
         // 查询该项目下的所有文件
-        List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId, level);
+        List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId);
 
         result.put("documents", documentList);
         result.put("parentId", docId);
-        result.put("level", level + 1);
         result.put("result", 1);
         return result;
     }
@@ -412,14 +400,14 @@ public class DocumentController extends BaseController {
         return newName + oldName.substring(index);
     }
 
-    private void move(Long parentId, Integer level) {
+    private void move(Long parentId) {
         List<Document> docList = documentService.getDocInfoByParentId(parentId);
         for (Document document : docList) {
             if (document.getType()) {
-                documentService.moveByDocId(document.getDocId(), parentId, level + 1);
-                move(document.getDocId(), level + 1);
+                documentService.moveByDocId(document.getDocId(), parentId);
+                move(document.getDocId());
             } else {
-                documentService.moveByDocId(document.getDocId(), parentId, level + 1);
+                documentService.moveByDocId(document.getDocId(), parentId);
             }
         }
     }

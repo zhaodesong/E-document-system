@@ -67,9 +67,13 @@ public class ProjectController extends BaseController {
         FileUtils.createDir(FOLDER + project.getId());
 
         if (insertFlag == 1 && projectAccountService.insert(projectAccount) == 1) {
-            result.put("result", true);
+            result.put("result", 1);
             result.put("msg", "创建成功");
-            result.put("project", projectService.getProjectById(project.getId()));
+            ProjectWithPower projectWithPower = new ProjectWithPower();
+            projectWithPower.setId(project.getId());
+            projectWithPower.setName(name);
+            projectWithPower.setPower("111");
+            result.put("project", projectWithPower);
             return result;
         }
         result.put("result", false);
@@ -131,9 +135,8 @@ public class ProjectController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer accountId = (Integer) session.getAttribute("accountId");
         Long docId = Long.parseLong(request.getParameter("docId"));
-        Integer level = Integer.valueOf(request.getParameter("level"));
         // 查询该项目下的所有文件
-        List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId, level);
+        List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId);
         for (int i = 0; i < documentList.size(); i++) {
             DocumentWithPower doc = documentList.get(i);
             if (hasPermission(projectId, accountId, doc.getDocId())) {
@@ -145,7 +148,6 @@ public class ProjectController extends BaseController {
 
         request.setAttribute("documents", documentList);
         request.setAttribute("parentId", docId);
-        request.setAttribute("level", level + 1);
         request.setAttribute("title", "流云文档");
         return "single_folder";
     }
@@ -219,13 +221,13 @@ public class ProjectController extends BaseController {
 
         Account account = accountService.getByMail(transferMail);
         if (account == null) {
-            result.put("msg", "该用户不存在");
+            result.put("msg", "该用户不存在或未加入该项目");
             result.put("result", 0);
             return result;
         }
         ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, account.getId());
         if (projectAccount == null) {
-            result.put("msg", "该用户未加入该项目");
+            result.put("msg", "该用户不存在或未加入该项目");
             result.put("result", 0);
             return result;
         }
@@ -243,7 +245,7 @@ public class ProjectController extends BaseController {
         // 判断是否为高权限者
         ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, accountId);
         String p = projectAccount.getPermission();
-        if ("11".equals(p)) {
+        if ("11".equals(p) || "111".equals(p)) {
             return true;
         }
 
@@ -254,7 +256,7 @@ public class ProjectController extends BaseController {
         }
 
         // 判断文档本身权限和账户权限
-        if (document.getPower() == 1 && "01".equals(p)) {
+        if (document.getPower() == 1 && "10".equals(p)) {
             return true;
         }
         return false;

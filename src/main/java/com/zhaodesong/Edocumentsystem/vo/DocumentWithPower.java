@@ -32,8 +32,6 @@ public class DocumentWithPower implements Serializable {
 
     private Long parentId;
 
-    private Integer level;
-
     private Integer power;
 
     private Integer delFlag;

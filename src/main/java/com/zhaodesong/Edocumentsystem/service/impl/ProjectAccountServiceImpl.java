@@ -65,7 +65,7 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
         ProjectAccount projectAccount = new ProjectAccount();
         projectAccount.setProjectId(projectId);
         projectAccount.setAccountId(oldAccount);
-        projectAccount.setPermission("01");
+        projectAccount.setPermission("10");
         projectAccountDao.updatePermission(projectAccount);
 
         projectAccount.setAccountId(newAccount);

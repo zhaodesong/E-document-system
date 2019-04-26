@@ -32,8 +32,6 @@ public class Document implements Serializable {
 
     private Long parentId;
 
-    private Integer level;
-
     private Integer power;
 
     private Integer delFlag;

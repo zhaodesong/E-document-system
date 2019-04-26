@@ -7,7 +7,6 @@
     <link rel="stylesheet" type="text/css" href="/css/common.css">
     <script src="/js/jquery.min.js"></script>
     <script src="/js/semantic.min.js"></script>
-
 </head>
 <body>
 <#include "common/header.ftl" parse=true encoding='utf-8'>
@@ -37,9 +36,6 @@
                     <div class="ui input">
                         <input type="password" placeholder="再次输入新密码" id="newPwd2">
                     </div>
-<#--                    <div><span>输入原密码</span><input type="password" id="oldPwd"></div>-->
-<#--                    <div><span>输入新密码</span><input type="password" id="newPwd"></div>-->
-<#--                    <div><span>再次输入新密码</span><input type="password" id="newPwd2"></div>-->
                 </div>
             </div>
         </div>
@@ -64,9 +60,9 @@
             url: "/changeNickName",
             type: "POST",
             dataType: "json",
-            data: {nickName: $(this).val() },
+            data: {nickName: $(this).val()},
             success: function (data) {
-                if (data.result == 1) {
+                if (data.result === 1) {
                     alert("昵称修改成功！");
                 } else {
                     alert(data.msg);
@@ -77,34 +73,34 @@
         temp = $(this).val();
     })
 
-    $('#showModal').on('click',function () {
+    $('#showModal').on('click', function () {
         $('.small.modal').modal('show');
     });
-    $('#confirm').on('click',function () {
+    $('#confirm').on('click', function () {
         var oldPwd = $('#oldPwd').val();
         var newPwd = $('#newPwd').val();
         var newPwd2 = $('#newPwd2').val();
-        if (newPwd != newPwd2) {
+        if (newPwd !== newPwd2) {
             alert("新密码两次输入不一致");
             return;
         }
         $.ajax({
             url: '/changePwd',
             type: 'post',
-            data: {oldPwd: oldPwd,
-                newPwd: newPwd},
+            data: {
+                oldPwd: oldPwd,
+                newPwd: newPwd
+            },
             dataType: 'json',
             success: function (data) {
-                if (data.result == 1) {
+                if (data.result === 1) {
                     alert("密码修改成功,请重新登录");
-                    window.open("/","/self");
-                } else if (data.result == 2) {
+                    window.open("/", "/self");
+                } else if (data.result === 2) {
                     alert("原密码不正确");
-                }
-                else{
+                } else {
                     alert("修改失败");
                 }
-
             }
         });
     });

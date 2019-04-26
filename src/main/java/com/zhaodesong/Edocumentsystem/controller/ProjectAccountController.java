@@ -58,7 +58,7 @@ public class ProjectAccountController extends BaseController {
         ProjectAccount insertAccount = new ProjectAccount();
         insertAccount.setAccountId(account.getId());
         insertAccount.setProjectId(projectId);
-        insertAccount.setPermission("01");
+        insertAccount.setPermission("10");
         projectAccountService.insert(insertAccount);
 
         AccountForManage acc = new AccountForManage();
@@ -100,8 +100,9 @@ public class ProjectAccountController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer changeId = Integer.parseInt(request.getParameter("changeId"));
         String p = request.getParameter("permission");
-        if (!"00".equals(p) && !"01".equals(p) && !"11".equals(p)) {
+        if (!"00".equals(p) && !"10".equals(p) && !"11".equals(p)) {
             result.put("msg", "参数错误");
+            result.put("result", 0);
             return result;
         }
 
@@ -113,9 +114,15 @@ public class ProjectAccountController extends BaseController {
             projectAccountService.updatePermission(pa);
         }
         result.put("msg", "修改成功");
+        result.put("result", 1);
         return result;
     }
 
+    /**
+     * 项目创建者以及当前登陆者的信息不能修改，因此不显示
+     *
+     * @return
+     */
     @RequestMapping("toAccountManage")
     public String toAccountManage() {
         if (sessionCheck()) {
@@ -132,6 +139,19 @@ public class ProjectAccountController extends BaseController {
         }
 
         List<AccountForManage> accountList = accountService.getAccountForManage(projectId);
+        Integer createId = projectService.getProjectById(projectId).getCreateAccount();
+        for (int i = 0; i < accountList.size(); i++) {
+            if (accountList.get(i).getId().equals(accountId)) {
+                accountList.remove(i);
+                break;
+            }
+        }
+        for (int i = 0; i < accountList.size(); i++) {
+            if (accountList.get(i).getId().equals(createId)) {
+                accountList.remove(i);
+                break;
+            }
+        }
         request.setAttribute("accountList", accountList);
         return "account_manage";
     }
@@ -170,6 +190,6 @@ public class ProjectAccountController extends BaseController {
     private boolean hasPermissionEditDoc(Integer projectId, Integer accountId) {
         ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, accountId);
         String p = projectAccount.getPermission();
-        return "01".equals(p) || "11".equals(p);
+        return "10".equals(p) || "11".equals(p);
     }
 }

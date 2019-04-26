@@ -41,9 +41,10 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public String getNameByDocId(Long docId) {
+    public String getNameByDocIdAndVersion(Long docId, Integer version) {
         DocumentQuery documentQuery = new DocumentQuery();
         documentQuery.setDocId(docId);
+        documentQuery.setVersion(version);
         List<Document> documentList = documentDao.findNotNull(documentQuery);
         if (documentList == null || documentList.size() == 0) {
             return null;
@@ -118,7 +119,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public List<DocumentWithPower> getAllDocInfoByProjectId(Integer projectId, Integer delFlag) {
-        return documentDao.getAllDocInfoByProjectId(projectId, 0, delFlag);
+        return documentDao.getAllDocInfoByProjectId(projectId, delFlag);
     }
 
     @Override
@@ -127,8 +128,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Integer level) {
-        return documentDao.getAllDocInfoByParentId(parentId,  (level + 1));
+    public List<DocumentWithPower> getAllDocInfoByParentId(Long parentId) {
+        return documentDao.getAllDocInfoByParentId(parentId);
     }
 
     @Override
@@ -142,8 +143,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public int moveByDocId(Long docId, Long parentId, Integer level) {
-        return documentDao.moveByDocId(docId, parentId, level);
+    public int moveByDocId(Long docId, Long parentId) {
+        return documentDao.moveByDocId(docId, parentId);
     }
 
     @Override

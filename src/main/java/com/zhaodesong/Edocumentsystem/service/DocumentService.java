@@ -17,7 +17,7 @@ public interface DocumentService {
 
     int insert(Document document);
 
-    String getNameByDocId(Long docId);
+    String getNameByDocIdAndVersion(Long docId, Integer version);
 
     Long getMaxDocId();
 
@@ -41,13 +41,13 @@ public interface DocumentService {
 
     int renameByDocId(Long docId, String name);
 
-    List<DocumentWithPower> getAllDocInfoByParentId(Long parentId, Integer level);
+    List<DocumentWithPower> getAllDocInfoByParentId(Long parentId);
 
     List<Document> getAllDelectDocByProjectId(Integer projectId);
 
     int changePermission(Long docId, Integer power);
 
-    int moveByDocId(Long docId, Long parentId, Integer level);
+    int moveByDocId(Long docId, Long parentId);
 
     List<Document> getDocInfoByParentId(Long parentId);
 }

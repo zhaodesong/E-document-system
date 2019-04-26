@@ -5,80 +5,9 @@
     <title></title>
     <link rel="stylesheet" type="text/css" href="/css/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/documentPage.css">
     <script src="/js/jquery.min.js"></script>
     <script src="/js/semantic.min.js"></script>
-    <style>
-        .doc {
-            border: 1px solid #888888;
-            max-width: 500px;
-            height: 50px;
-            box-shadow: 4px 4px 5px #888888;
-            line-height: 50px;
-            padding-left: 1em;
-            margin-bottom: 30px;
-        }
-
-        #fileUpload {
-            opacity: 0;
-            width: 120px;
-            height: 36px;
-            position: relative;
-            right: 128px;
-            bottom: 6px;
-            cursor: pointer !important;
-        }
-
-        .fileUpdate {
-            position: absolute;
-            opacity: 0;
-            width: 90px;
-            height: 30px;
-            left: 0;
-            top: 64px;
-        }
-
-        .operation {
-            background-color: #f0f0f0;
-            z-index: 2;
-            position: absolute;
-            width: 90px;
-            border: 1px solid #b0b0b0;
-            line-height: 30px;
-            box-shadow: 2px 2px 2px #a0a0a0;
-            left: -45px;
-        }
-
-        .operation a {
-            padding: 10px 15px;
-            display: block;
-        }
-
-        .opt {
-            position: relative;
-        }
-
-        .tip {
-            cursor: pointer;
-        }
-
-        .operation a:hover, .operation form:hover {
-            background-color: #80bdff;
-        }
-
-        .ui.vertical.menu:hover {
-            background-color: #80bdff !important;
-        }
-
-        .ui.vertical.menu {
-            border-radius: 0;
-            width: 88px;
-            background-color: #f0f0f0;
-            border: none;
-            margin: 0;
-            padding: 0;
-            border-color: #f0f0f0;
-        }
-    </style>
 </head>
 <body>
 <#include "common/header.ftl" encoding="UTF-8" parse=true>
@@ -88,7 +17,7 @@
         <#if documents?size=0>
             <p class="noitem">项目中还没有文件(夹)</p>
         <#--上传新文件-->
-            <form method="POST" action="/upload?parentId=0&level=0&flag=1" enctype="multipart/form-data"
+            <form method="POST" action="/upload?parentId=0&flag=1" enctype="multipart/form-data"
                   id="uploadForm">
                 <button class="ui button" style="width: 120px">上传文件</button>
                 <input type="file" name="file" id="fileUpload"/>
@@ -105,7 +34,7 @@
                             <a href="/download?did=${doc.docId}&dver=${doc.version}">下载</a>
                             <#if doc.isEdit! = "1">
                                 <form method="POST"
-                                      action="/update?docId=${doc.docId}&parentId=${parentId!}&level=${level!}&flag=1"
+                                      action="/update?docId=${doc.docId}&parentId=0&flag=1"
                                       enctype="multipart/form-data" class="updateForm">
                                     <a>更新</a>
                                     <input type="file" name="file" class="fileUpdate"/>
@@ -131,7 +60,7 @@
                         </div>
                     </div>
                     <#else ><!--文件夹-->
-                    <a href="/toSingleFolder?docId=${doc.docId!}&level=${doc.level!}"
+                    <a href="/toSingleFolder?docId=${doc.docId!}"
                        class="to_single_folder docName">${doc.name}</a>
                     <#if doc.isEdit! = "1">
                         <div class="opt fright" style="right: 20px;">
@@ -146,19 +75,24 @@
                 </div>
             </#list>
         <#--上传-->
-            <form method="POST" action="/upload?parentId=${documents[0].parentId}&level=${documents[0].level}&flag=1"
+            <form method="POST" action="/upload?parentId=${documents[0].parentId}&flag=1"
                   enctype="multipart/form-data" id="uploadForm">
                 <button class="ui button" style="width: 120px;">上传文件</button>
                 <input type="file" name="file" id="fileUpload"/>
             </form>
         </#if>
     </div>
+    <br>
     <div class="">
         <button id="newFolder" class="ui button showModal" style="width: 120px;">新建文件夹</button>
     </div>
-    <div class="">
-        <a href="/toRecycleBin?pid=${Session.projectId}">回收站</a>
+    <br>
+    <div>
+        <a href="/toRecycleBin?pid=${Session.projectId}">
+            <button class="ui button" style="width: 120px">回收站</button>
+        </a>
     </div>
+
 
     <div class="ui small modal">
         <div class="ui icon header">
@@ -190,7 +124,7 @@
             data: {docId: selectedBtn.closest('.doc').attr('id')},
             dataType: 'json',
             success: function (data) {
-                if (data.result === true) {
+                if (data.result === 1) {
                     $('#' + data.docId).remove();
                 } else {
                 }
@@ -214,14 +148,14 @@
             data: {docId: selectedBtn.closest('.doc').attr('id')},
             dataType: 'json',
             success: function (data) {
-                if (data.result == true) {
+                if (data.result === 1) {
                     var copyDiv = $("<div class='doc' id='" + data.document.docId + "'>" +
                         "<span class='docName'>" + data.document.name + "</span>" +
                         "<div class='opt fright' style='right: 20px;'>" +
                         "<span class='tip'>•••</span>" +
                         "<div class='operation hide'>" +
                         "<a href='/download?did=" + data.document.docId + "&dver=" + data.document.version + "'>下载</a>" +
-                        "<form method='POST' action='/update?docId=" + data.document.docId + "&parentId=" + data.document.parentId + "&level=" + data.docuement.level + "&flag=1'" +
+                        "<form method='POST' action='/update?docId=" + data.document.docId + "&parentId=" + data.document.parentId + "&flag=1'" +
                         "enctype='multipart/form-data' class='updateForm'><a>更新</a>" +
                         "<input type='file' name='file' class='fileUpdate'/>" +
                         "</form>" +
@@ -250,10 +184,6 @@
         $('.doc:not(#' + id + ')').find('.operation').addClass('hide');
         $(this).next('.operation').toggleClass('hide');
     });
-    // $(document).on('click',function (e) {
-    //     if(e.target.className.search('tip') !== -1) return;
-    //     $('.operation').addClass('hide');
-    // });
 
     $(document).on('click', '.showModal', function () {
         selectedBtn = $(this);
@@ -284,7 +214,7 @@
                 },
                 dataType: 'json',
                 success: function (data) {
-                    if (data.result === true) {
+                    if (data.result === 1) {
                         selectedBtn.closest('.doc').find('.docName').html(data.name);
                         console.log("重命名成功");
                     } else {
@@ -302,13 +232,12 @@
                 data: {
                     folderName: $("#inputName").val(),
                     parentId: 0,
-                    level: 0
                 },
                 dataType: 'json',
                 success: function (data) {
-                    if (data.result == 1) {
+                    if (data.result === 1) {
                         var newFolderDiv = $("<div class='doc' id='" + data.document.docId + "'>" +
-                            "<a class='to_single_folder docName' href='/toSingleFolder?docId=" + data.document.docId + "&level=" + data.document.level + "'>" + data.document.name + "</a>" +
+                            "<a class='to_single_folder docName' href='/toSingleFolder?docId=" + data.document.docId + "'>" + data.document.name + "</a>" +
                             "<input type='hidden' value='" + data.document.docId + "'/>" +
                             "<div class='opt fright' style='right:20px;'>" +
                             "<span class='tip'>•••</span>" +
@@ -330,21 +259,23 @@
     })
 </script>
 <script>
-    var selectIsEdit;
-    $('.isEditItem').on('click', function () {
-        selectIsEdit = $(this);
+    $('.isEditItem').on('click', function (e) {
+        var clickId = $(e.target);
+        var power = clickId.attr("data-value");
+        var selectIsEdit = $(this);
         $.ajax({
             url: '/changeDocPower',
             type: 'post',
             data: {
                 docId: selectIsEdit.closest('.doc').attr('id'),
-                power: $('.isEditItem').attr("data-value")
+                power: power
             },
             dataType: 'json',
             success: function (data) {
-                if (data.result == 1) {
+                if (data.result === 1) {
                     $(".isEditItem").removeClass("active");
-                    $(this).addClass("active");
+                    clickId.addClass("active");
+                    alert("修改权限成功");
                 } else {
                     alert("修改失败");
                 }

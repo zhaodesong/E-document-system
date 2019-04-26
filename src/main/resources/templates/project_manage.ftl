@@ -21,8 +21,8 @@
     <div class="ui input">
         <input type="text" placeholder="输入被转让人的邮箱" id="transferMail">
     </div>
-    <br>
-    <button class="negative ui button" id="transfer">我已知晓后果，确认转让</button>
+    <P></P>
+    <button class="ui button" id="transfer">我已知晓后果，确认转让</button>
     <br>
     <h2 class="ui header">
         重命名项目
@@ -32,7 +32,7 @@
         删除项目
         <div class="sub header">所有文件将会一并被删除，请谨慎操作</div>
     </h2>
-    <button class="negative ui button" id="deleteProject">我已知晓后果，确认删除</button>
+    <button class="ui button" id="deleteProject">我已知晓后果，确认删除</button>
 </div>
 <script>
     $('#transfer').on('click', function () {
@@ -45,7 +45,7 @@
                 transferMail: $("#transferMail").val()
             },
             success: function (data) {
-                if (data.result == 1) {
+                if (data.result === 1) {
                     alert("转让成功");
                     window.open("/toLoginSuccess", "/self");
                 } else {
@@ -64,18 +64,17 @@
             url: "/renameProject",
             type: "POST",
             dataType: "json",
-            data: {newName: $(this).val() },
+            data: {newName: $(this).val()},
             success: function (data) {
-                if (data.result == 1) {
+                if (data.result === 1) {
                     alert("项目名称修改成功！");
                 } else {
                     alert(data.msg);
-                    console.log(data.msg);
                 }
             }
         });
         temp = $(this).val();
-    })
+    });
 
     $('#deleteProject').on('click', function () {
         $.ajax({
@@ -84,7 +83,7 @@
             dataType: "json",
             data: {pid: $("#projectId").val()},
             success: function (data) {
-                if (data.result == 1) {
+                if (data.result === 1) {
                     alert("删除成功");
                     window.open("/toLoginSuccess", "/self");
                 } else {

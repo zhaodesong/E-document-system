@@ -119,7 +119,7 @@
             data: {docId: selectedBtn.closest('.doc').attr('id')},
             dataType: 'json',
             success: function (data) {
-                if (data.result === true) {
+                if (data.result === 1) {
                     $('#' + data.docId).remove();
                 } else {
                     console.log(err);
@@ -139,7 +139,7 @@
             data: {docId: selectedBtn.closest('.doc').attr('id')},
             dataType: 'json',
             success: function (data) {
-                if (data.result === true) {
+                if (data.result === 1) {
                     $('#' + data.docId).remove();
                 } else {
                     console.log(err);

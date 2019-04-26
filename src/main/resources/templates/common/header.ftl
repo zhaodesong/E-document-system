@@ -1,6 +1,6 @@
 <div class="ui container" style="background-color: #f0f0f0;margin-bottom: 40px;">
     <div class="ui large secondary inverted pointing menu">
-        <a class="item" href="/">
+        <a class="item" href="/toLoginSuccess">
             流云文档
         </a>
 

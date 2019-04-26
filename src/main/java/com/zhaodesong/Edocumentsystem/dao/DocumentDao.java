@@ -27,7 +27,6 @@ public interface DocumentDao {
             + "<if test='accountIdModify !=null'>AND account_id_modify = #{accountIdModify} </if>"
             + "<if test='type !=null'>AND type = #{type} </if>"
             + "<if test='parentId !=null'>AND parent_id = #{parentId} </if>"
-            + "<if test='level !=null'> AND level = #{level} </if>"
             + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart} </if>"
             + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd} </if>"
             + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart} </if>"
@@ -36,8 +35,8 @@ public interface DocumentDao {
             + "</script>")
     List<Document> findNotNull(DocumentQuery documentQuery);
 
-    @Insert("INSERT INTO document(id,doc_id,project_id,name,version,account_id_create,account_id_modify,type,parent_id,level,power,del_flag,create_time,update_time) " +
-            "VALUES (#{id}, #{docId}, #{projectId}, #{name}, #{version}, #{accountIdCreate}, #{accountIdModify}, #{type}, #{parentId}, #{level}, #{power},#{delFlag},#{createTime}, #{updateTime})")
+    @Insert("INSERT INTO document(id,doc_id,project_id,name,version,account_id_create,account_id_modify,type,parent_id,power,del_flag,create_time,update_time) " +
+            "VALUES (#{id}, #{docId}, #{projectId}, #{name}, #{version}, #{accountIdCreate}, #{accountIdModify}, #{type}, #{parentId}, #{power}, #{delFlag}, #{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
     int insert(Document document);
 
@@ -62,13 +61,13 @@ public interface DocumentDao {
     @Select("SELECT MAX(doc_id) FROM document")
     Long getMaxDocId();
 
-    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND d.level=#{level} AND del_flag = #{delFlag} AND d.version = " +
-            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND project_id=#{projectId} AND level=#{level} AND del_flag = #{delFlag})")
-    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId") Integer projectId, @Param("level") Integer level, @Param("delFlag") Integer delFlag);
+    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND parent_id=0 AND del_flag = #{delFlag} AND d.version = " +
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=0 AND project_id=#{projectId} AND del_flag = #{delFlag})")
+    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId") Integer projectId, @Param("delFlag") Integer delFlag);
 
-    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND d.level=#{level} AND del_flag = 0 AND d.version = " +
-            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND level=#{level} AND del_flag = 0)")
-    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId") Long parentId, @Param("level") Integer level);
+    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND del_flag = 0 AND d.version = " +
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND del_flag = 0)")
+    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId") Long parentId);
 
     @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND del_flag = 1 AND d.version = " +
             "(SELECT max(version) FROM document WHERE project_id=#{projectId} AND d.doc_id = doc_id AND del_flag = 1)")
@@ -77,8 +76,8 @@ public interface DocumentDao {
     @Update("UPDATE document SET name=#{name} WHERE doc_id=#{docId}")
     int renameByDocId(@Param("docId") Long docId, @Param("name") String name);
 
-    @Update("UPDATE document SET parent_id=#{parentId}, level=#{level} WHERE doc_id=#{docId}")
-    int moveByDocId(@Param("docId") Long docId, @Param("parentId") Long parentId, @Param("level") Integer level);
+    @Update("UPDATE document SET parent_id=#{parentId} WHERE doc_id=#{docId}")
+    int moveByDocId(@Param("docId") Long docId, @Param("parentId") Long parentId);
 
     @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND del_flag = 0 AND d.version = " +
             "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND del_flag = 0")
