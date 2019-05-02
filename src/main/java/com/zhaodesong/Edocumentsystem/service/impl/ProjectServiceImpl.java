@@ -25,17 +25,17 @@ public class ProjectServiceImpl implements ProjectService {
     @Autowired
     private ProjectAccountDao projectAccountDao;
 
-    @Override
-    public List<Project> getProjectByAccountId(Integer accountId) {
-        ProjectAccountQuery query = new ProjectAccountQuery();
-        query.setAccountId(accountId);
-        List<ProjectAccount> projectAccountList = projectAccountDao.findNotNull(query);
-        List<Project> result = new ArrayList<>();
-        for (int i = 0; i < projectAccountList.size(); i++) {
-            result.add(projectDao.getById(projectAccountList.get(i).getProjectId()));
-        }
-        return result;
-    }
+//    @Override
+//    public List<Project> getProjectByAccountId(Integer accountId) {
+//        ProjectAccountQuery query = new ProjectAccountQuery();
+//        query.setAccountId(accountId);
+//        List<ProjectAccount> projectAccountList = projectAccountDao.findNotNull(query);
+//        List<Project> result = new ArrayList<>();
+//        for (ProjectAccount projectAccount : projectAccountList) {
+//            result.add(projectDao.getById(projectAccount.getProjectId()));
+//        }
+//        return result;
+//    }
 
     @Override
     public int insert(Project project) {

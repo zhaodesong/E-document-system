@@ -14,8 +14,6 @@ import java.util.List;
  */
 @Repository
 public interface DocumentDao {
-    Document getById(Long id);
-
     @Select("<script>"
             + "SELECT * FROM document"
             + "<where>"
@@ -34,6 +32,25 @@ public interface DocumentDao {
             + "</where>"
             + "</script>")
     List<Document> findNotNull(DocumentQuery documentQuery);
+
+    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND parent_id=0 AND del_flag = #{delFlag} AND d.version = " +
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=0 AND project_id=#{projectId} AND del_flag = #{delFlag})")
+    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId") Integer projectId, @Param("delFlag") Integer delFlag);
+
+    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND del_flag = 0 AND d.version = " +
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND del_flag = 0)")
+    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId") Long parentId);
+
+    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND del_flag = 1 AND d.version = " +
+            "(SELECT max(version) FROM document WHERE project_id=#{projectId} AND d.doc_id = doc_id AND del_flag = 1)")
+    List<Document> getAllDelectDocByProjectId(Integer projectId);
+
+    @Select("SELECT MAX(doc_id) FROM document")
+    Long getMaxDocId();
+
+    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND del_flag = 0 AND d.version = " +
+            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND del_flag = 0")
+    List<Document> getDocInfoByParentId(@Param("parentId") Long parentId);
 
     @Insert("INSERT INTO document(id,doc_id,project_id,name,version,account_id_create,account_id_modify,type,parent_id,power,del_flag,create_time,update_time) " +
             "VALUES (#{id}, #{docId}, #{projectId}, #{name}, #{version}, #{accountIdCreate}, #{accountIdModify}, #{type}, #{parentId}, #{power}, #{delFlag}, #{createTime}, #{updateTime})")
@@ -58,28 +75,9 @@ public interface DocumentDao {
     @Update("UPDATE document SET power=#{power} WHERE doc_id=#{docId}")
     int changePermission(@Param("docId") Long docId, @Param("power") Integer power);
 
-    @Select("SELECT MAX(doc_id) FROM document")
-    Long getMaxDocId();
-
-    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND parent_id=0 AND del_flag = #{delFlag} AND d.version = " +
-            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=0 AND project_id=#{projectId} AND del_flag = #{delFlag})")
-    List<DocumentWithPower> getAllDocInfoByProjectId(@Param("projectId") Integer projectId, @Param("delFlag") Integer delFlag);
-
-    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND del_flag = 0 AND d.version = " +
-            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND del_flag = 0)")
-    List<DocumentWithPower> getAllDocInfoByParentId(@Param("parentId") Long parentId);
-
-    @Select("SELECT * FROM document AS d WHERE d.project_id=#{projectId} AND del_flag = 1 AND d.version = " +
-            "(SELECT max(version) FROM document WHERE project_id=#{projectId} AND d.doc_id = doc_id AND del_flag = 1)")
-    List<Document> getAllDelectDocByProjectId(Integer projectId);
-
     @Update("UPDATE document SET name=#{name} WHERE doc_id=#{docId}")
     int renameByDocId(@Param("docId") Long docId, @Param("name") String name);
 
     @Update("UPDATE document SET parent_id=#{parentId} WHERE doc_id=#{docId}")
     int moveByDocId(@Param("docId") Long docId, @Param("parentId") Long parentId);
-
-    @Select("SELECT * FROM document AS d WHERE d.parent_id=#{parentId} AND del_flag = 0 AND d.version = " +
-            "(SELECT max(version) FROM document WHERE d.doc_id = doc_id AND parent_id=#{parentId} AND del_flag = 0")
-    List<Document> getDocInfoByParentId(@Param("parentId") Long parentId);
 }

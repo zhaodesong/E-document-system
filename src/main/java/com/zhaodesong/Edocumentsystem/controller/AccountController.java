@@ -2,7 +2,6 @@ package com.zhaodesong.Edocumentsystem.controller;
 
 import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Account;
-import com.zhaodesong.Edocumentsystem.query.AccountQuery;
 import com.zhaodesong.Edocumentsystem.service.AccountService;
 import com.zhaodesong.Edocumentsystem.service.ProjectService;
 import com.zhaodesong.Edocumentsystem.vo.ProjectWithPower;
@@ -52,10 +51,7 @@ public class AccountController extends BaseController {
             return "index";
         }
 
-        AccountQuery accountQuery = new AccountQuery();
-        accountQuery.setMail(mail);
-        accountQuery.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
-        Account account = accountService.login(accountQuery);
+        Account account = accountService.login(mail, password);
         if (account == null) {
             request.setAttribute("msg", "邮箱或密码错误");
             return "index";

@@ -52,7 +52,7 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
 
     @Override
     public int deleteByProjectIdAndAccountId(Integer projectId, Integer accountId) {
-        return projectAccountDao.deleteByProjectIdAndAccountId(projectId,accountId);
+        return projectAccountDao.deleteByProjectIdAndAccountId(projectId, accountId);
     }
 
     @Override
@@ -66,11 +66,12 @@ public class ProjectAccountServiceImpl implements ProjectAccountService {
         projectAccount.setProjectId(projectId);
         projectAccount.setAccountId(oldAccount);
         projectAccount.setPermission("10");
-        projectAccountDao.updatePermission(projectAccount);
+        if (projectAccountDao.updatePermission(projectAccount) == 0) {
+            return 0;
+        }
 
         projectAccount.setAccountId(newAccount);
         projectAccount.setPermission("111");
-        projectAccountDao.updatePermission(projectAccount);
-        return 1;
+        return projectAccountDao.updatePermission(projectAccount);
     }
 }

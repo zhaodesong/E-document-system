@@ -2,10 +2,7 @@ package com.zhaodesong.Edocumentsystem.controller;
 
 import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Document;
-import com.zhaodesong.Edocumentsystem.po.ProjectAccount;
 import com.zhaodesong.Edocumentsystem.service.DocumentService;
-import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
-import com.zhaodesong.Edocumentsystem.service.impl.DocumentServiceImpl;
 import com.zhaodesong.Edocumentsystem.util.FileUtils;
 import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
 import lombok.extern.slf4j.Slf4j;
@@ -178,6 +175,7 @@ public class DocumentController extends BaseController {
         res.put("result", 1);
         res.put("msg", "删除成功");
         res.put("docId", docId);
+        res.put("projectId", projectId);
         return res;
     }
 
@@ -205,6 +203,8 @@ public class DocumentController extends BaseController {
         res.put("result", 1);
         res.put("msg", "删除成功");
         res.put("docId", docId);
+        res.put("projectId", projectId);
+        res.put("parentId", deleteDocList.get(0).getParentId());
         return res;
     }
 
@@ -236,6 +236,7 @@ public class DocumentController extends BaseController {
         res.put("result", 1);
         res.put("msg", "删除成功");
         res.put("docId", docId);
+        res.put("projectId", projectId);
         return res;
     }
 
@@ -294,7 +295,9 @@ public class DocumentController extends BaseController {
             e.printStackTrace();
         }
         result.put("result", 1);
-        result.put("document", destDoc);
+        result.put("doc", destDoc);
+        result.put("projectId", projectId);
+        result.put("parentId", srcDoc.getParentId());
         return result;
     }
 
@@ -337,7 +340,9 @@ public class DocumentController extends BaseController {
         documentService.insert(document);
         result.put("result", 1);
         result.put("msg", "创建成功");
-        result.put("document", document);
+        result.put("doc", document);
+        result.put("projectId", projectId);
+        result.put("parentId", parentId);
         return result;
     }
 

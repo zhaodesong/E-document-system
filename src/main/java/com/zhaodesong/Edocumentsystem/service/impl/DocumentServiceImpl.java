@@ -105,7 +105,6 @@ public class DocumentServiceImpl implements DocumentService {
                 result.addAll(getDeleteFile(result.get(i).getDocId()));
             }
         }
-
         return result;
     }
 

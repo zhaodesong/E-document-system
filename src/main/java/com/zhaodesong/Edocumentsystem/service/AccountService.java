@@ -1,11 +1,7 @@
 package com.zhaodesong.Edocumentsystem.service;
 
 import com.zhaodesong.Edocumentsystem.po.Account;
-import com.zhaodesong.Edocumentsystem.query.AccountQuery;
 import com.zhaodesong.Edocumentsystem.vo.AccountForManage;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -16,9 +12,7 @@ import java.util.List;
 public interface AccountService {
     Account getById(Integer id);
 
-    Account login(AccountQuery account);
-
-    int logout(String mail);
+    Account login(String mail, String password);
 
     int insert(Account account);
 

@@ -32,6 +32,12 @@ public interface AccountDao {
             + "</script>")
     List<Account> findNotNull(AccountQuery account);
 
+    @Select("SELECT * FROM account WHERE mail = #{mail}")
+    Account getByMail(String mail);
+
+    @Select("SELECT account.id,mail,nick_name,permission as power FROM account,project_account WHERE project_id=#{projectId} AND account.id = account_id")
+    List<AccountForManage> getAccountForManage(Integer projectId);
+
     @Insert("INSERT INTO account(id,mail,password,nick_name,verify_flag,create_time,update_time) " +
             "VALUES (#{id}, #{mail}, #{password}, #{nickName}, #{verifyFlag}, #{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
@@ -51,10 +57,4 @@ public interface AccountDao {
             + "WHERE id = #{id}"
             + "</script>")
     int updateById(Account account);
-
-    @Select("SELECT * FROM account WHERE mail = #{mail}")
-    Account getByMail(String mail);
-
-    @Select("SELECT account.id,mail,nick_name,permission as power FROM account,project_account WHERE project_id=#{projectId} AND account.id = account_id")
-    List<AccountForManage> getAccountForManage(Integer projectId);
 }

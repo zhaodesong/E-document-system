@@ -8,6 +8,7 @@ import com.zhaodesong.Edocumentsystem.vo.AccountForManage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.DigestUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +18,6 @@ import java.util.List;
  * @date 2019-3-12 17:20
  */
 @Service
-@Slf4j
 public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountDao accountDao;
@@ -28,17 +28,15 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public Account login(AccountQuery account) {
-        List<Account> accountList = accountDao.findNotNull(account);
+    public Account login(String mail, String password) {
+        AccountQuery accountQuery = new AccountQuery();
+        accountQuery.setMail(mail);
+        accountQuery.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()));
+        List<Account> accountList = accountDao.findNotNull(accountQuery);
         if (accountList == null || accountList.size() == 0) {
             return null;
         }
         return accountList.get(0);
-    }
-
-    @Override
-    public int logout(String mail) {
-        return 0;
     }
 
     @Override
@@ -56,7 +54,6 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public int updateById(Account account) {
-        //log.debug("调用updateById函数，参数account={}", account);
         account.setUpdateTime(LocalDateTime.now());
         return accountDao.updateById(account);
     }

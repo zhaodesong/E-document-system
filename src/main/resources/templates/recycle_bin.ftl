@@ -2,39 +2,37 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>回收站</title>
+    <title>回收站 - 流云文档</title>
     <link rel="stylesheet" type="text/css" href="/css/semantic.min.css">
-    <link rel="stylesheet" type="text/css" href="/css/common.css">
+    <link rel="stylesheet" type="text/css" href="/css/icon.min.css">
+    <link rel="stylesheet" type="text/css" href="/components/reset.css">
+    <#--    <link rel="stylesheet" type="text/css" href="/components/site.css">-->
+
+    <link rel="stylesheet" type="text/css" href="/components/container.css">
+    <link rel="stylesheet" type="text/css" href="/components/grid.css">
+    <link rel="stylesheet" type="text/css" href="/components/header.css">
+    <link rel="stylesheet" type="text/css" href="/components/image.css">
+    <link rel="stylesheet" type="text/css" href="/components/menu.css">
+
+    <link rel="stylesheet" type="text/css" href="/components/divider.css">
+    <link rel="stylesheet" type="text/css" href="/components/list.css">
+    <link rel="stylesheet" type="text/css" href="/components/segment.css">
+    <link rel="stylesheet" type="text/css" href="/components/dropdown.css">
+    <link rel="stylesheet" type="text/css" href="/components/icon.css">
+
     <script src="/js/jquery.min.js"></script>
     <script src="/js/semantic.min.js"></script>
     <style>
-        .doc {
-            border: 1px solid #888888;
-            max-width: 500px;
-            height: 50px;
-            box-shadow: 4px 4px 5px #888888;
-            line-height: 50px;
-            padding-left: 1em;
-            margin-bottom: 30px;
+        .fright {
+            float: right;
         }
 
-        #fileUpload {
-            opacity: 0;
-            width: 120px;
-            height: 36px;
-            position: relative;
-            right: 128px;
-            bottom: 6px;
-            cursor: pointer !important;
+        .hide {
+            display: none;
         }
 
-        .fileUpdate {
-            position: absolute;
-            opacity: 0;
-            width: 90px;
-            height: 30px;
-            left: 0;
-            top: 64px;
+        a {
+            color: black;
         }
 
         .operation {
@@ -49,7 +47,7 @@
         }
 
         .operation a {
-            padding: 10px 15px;
+            padding: 10px 5px;
             display: block;
         }
 
@@ -64,46 +62,62 @@
         .operation a:hover, .operation form:hover {
             background-color: #80bdff;
         }
-
-        .ui.vertical.menu:hover {
-            background-color: #80bdff !important;
-        }
-
-        .ui.vertical.menu {
-            border-radius: 0;
-            width: 88px;
-            background-color: #f0f0f0;
-            border: none;
-            margin: 0;
-            padding: 0;
-            border-color: #f0f0f0;
-        }
     </style>
 </head>
 <body>
-<#include "common/header.ftl" encoding="UTF-8" parse=true>
-<div class="ui container">
-    <#--    <p style="color:red;">${msg!}</p>-->
-    <div class="doclist">
-        <#if documents?size=0>
-            <p class="noitem">回收站为空</p>
-        <#else>
-            <#list documents! as doc>
-                <div class="doc" id="${doc.docId}">
-                    <span class="docName">${doc.name}</span>
-                    <div class="opt fright" style="right: 20px;">
-                        <span class="tip">•••</span>
-                        <div class="operation hide menu">
-                            <a href="#" class="recoveryFile">恢复文件</a>
-                            <a href="#" class="deleteFile">彻底删除</a>
-                        </div>
-                    </div>
+<#include "common/header.ftl" parse=true encoding='utf-8'>
+<div class="ui grid" style="margin-top: 10px;margin-bottom: 10px">
+    <div class="two wide column" style="position: relative">
+        <div class="ui secondary vertical labeled icon menu" style="position: fixed;height: auto;">
+            <div style="margin: 30px;margin-left: 40px">
+                <a class="item" href="/toLoginSuccess"><i class="desktop icon"></i>工作台</a>
+            </div>
+            <div style="margin: 30px;margin-left: 40px">
+                <a class="item" href="/toRecycleBin?pid=${Session.projectId}"><i class="trash icon"></i>回收站</a>
+            </div>
+        </div>
+    </div>
+    <div class="twelve wide column">
+        <div class="ui container" style="margin-top: 20px">
+            <#if documents?size=0>
+                <div class="ui container" id="noItem" style="margin-top: 10px">
+                    <h2 class="ui header">回收站为空</h2>
                 </div>
-            </#list>
-        </#if>
+            <#else>
+                <div class="doclist ui five column grid">
+                    <#list documents! as doc>
+                        <div class="column">
+                            <div class="ui card doc" id="${doc.docId}" style="width: 12.5vw;height: 35vh">
+                                <div class="content">
+                                    <div class="opt fright">
+                                        <span class="tip">•••</span>
+                                        <div class="operation hide menu">
+                                            <a href="#" class="recoveryFile">恢复文件</a>
+                                            <a href="#" class="deleteFile">彻底删除</a>
+                                        </div>
+                                    </div>
+                                    <div class="center aligned">
+                                        <img src="/img/file.png">
+                                    </div>
+                                    <div class="center aligned" style="max-height: available">
+                                        <a class="center aligned header docName">${doc.name}</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </#list>
+                </div>
+            </#if>
+        </div>
+    </div>
+    <div class="two wide column">
+        <div class="ui secondary vertical menu" style="position: fixed;">
+
+        </div>
     </div>
 </div>
-<script type="text/javascript">
+
+<script>
     $('.doclist').on('click', '.tip', function () {
         var id = $(this).closest('.doc').attr('id');
         $('.doc:not(#' + id + ')').find('.operation').addClass('hide');
@@ -121,12 +135,14 @@
             success: function (data) {
                 if (data.result === 1) {
                     $('#' + data.docId).remove();
+                    alert("彻底删除成功");
+                    window.open("/toRecycleBin?pid=" + data.projectId, "_self");
                 } else {
-                    console.log(err);
                     alert(data.msg);
                 }
             },
             error: function (err) {
+                alert("系统错误，请稍后重试");
                 console.log(err);
             }
         })
@@ -141,12 +157,14 @@
             success: function (data) {
                 if (data.result === 1) {
                     $('#' + data.docId).remove();
+                    alert("恢复文件成功");
+                    window.open("/toRecycleBin?pid=" + data.projectId, "_self");
                 } else {
-                    console.log(err);
                     alert(data.msg);
                 }
             },
             error: function (err) {
+                alert("系统错误，请稍后重试");
                 console.log(err);
             }
         })

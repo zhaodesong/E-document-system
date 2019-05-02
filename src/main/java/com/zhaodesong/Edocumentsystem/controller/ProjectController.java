@@ -121,7 +121,9 @@ public class ProjectController extends BaseController {
             }
         }
 
+        Project project = projectService.getProjectById(projectId);
         request.setAttribute("documents", documentList);
+        session.setAttribute("projectName", project.getName());
         session.setAttribute("projectId", projectId);
         return "project";
     }

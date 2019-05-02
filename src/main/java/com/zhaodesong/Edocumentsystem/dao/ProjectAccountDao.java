@@ -40,9 +40,9 @@ public interface ProjectAccountDao {
     @Delete("DELETE FROM project_account WHERE project_id = #{projectId}")
     int deleteByProjectId(Integer id);
 
+    @Delete("DELETE FROM project_account WHERE project_id = #{projectId} AND account_id = #{accountId}")
+    int deleteByProjectIdAndAccountId(@Param("projectId") Integer projectId, @Param("accountId") Integer accountId);
+
     @Update("UPDATE project_account SET permission = #{permission} WHERE project_id = #{projectId} AND account_id=#{accountId}")
     int updatePermission(ProjectAccount projectAccount);
-
-    @Delete("DELETE FROM project_account WHERE project_id = #{projectId} AND account_id = #{accountId}")
-    int deleteByProjectIdAndAccountId(@Param("projectId")Integer projectId, @Param("accountId")Integer accountId);
 }

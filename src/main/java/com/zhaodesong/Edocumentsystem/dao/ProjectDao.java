@@ -17,18 +17,8 @@ public interface ProjectDao {
     @Select("SELECT * FROM project WHERE id = #{id}")
     Project getById(Integer id);
 
-    @Select("<script>"
-            + "SELECT * FROM project"
-            + "<where>"
-            + "<if test='name != null'>AND name = #{name} </if>"
-            + "<if test='createAccount !=null'>AND create_account = #{createAccount} </if>"
-            + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart} </if>"
-            + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd} </if>"
-            + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart} </if>"
-            + "<if test='updateTimeEnd !=null'>AND create_time &lt; #{updateTimeEnd} </if>"
-            + "</where>"
-            + "</script>")
-    List<Project> findNotNull(ProjectQuery project);
+    @Select("SELECT project.id as id,name,permission as power FROM project, project_account WHERE project.id = project_id AND account_id = #{accountId}")
+    List<ProjectWithPower> getProjectPowerByAccountId(Integer accountId);
 
     @Insert("INSERT INTO project(id,name,create_account,create_time,update_time) " +
             "VALUES (#{id}, #{name}, #{createAccount}, #{createTime},#{updateTime})")
@@ -48,6 +38,5 @@ public interface ProjectDao {
             + "</script>")
     int updateById(Project project);
 
-    @Select("SELECT project.id as id,name,permission as power FROM project, project_account WHERE project.id = project_id AND account_id = #{accountId}")
-    List<ProjectWithPower> getProjectPowerByAccountId(Integer accountId);
+
 }
