@@ -43,8 +43,8 @@ public class ProjectController extends BaseController {
     public Object createProject() {
         Map<String, Object> result = new HashMap<>();
         Integer accountId = (Integer) session.getAttribute("accountId");
-
         String name = request.getParameter("projectName");
+        log.debug("ProjectController createProject开始, 参数为accountId = {}, name = {}", accountId, name);
 
         if (StringUtils.isEmpty(name)) {
             result.put("result", false);
@@ -75,9 +75,11 @@ public class ProjectController extends BaseController {
             projectWithPower.setPower("111");
             result.put("project", projectWithPower);
             return result;
+        } else {
+            result.put("result", 0);
+            result.put("msg", "创建失败");
         }
-        result.put("result", false);
-        result.put("msg", "创建失败");
+        log.debug("ProjectController createProject结束");
         return result;
     }
 
@@ -86,19 +88,22 @@ public class ProjectController extends BaseController {
     public Object deleteProject() {
         Map<String, Object> result = new HashMap<>();
         int projectId = Integer.parseInt(request.getParameter("pid"));
-        Integer accountId = (Integer) session.getAttribute("accountId");
-        projectService.deleteById(projectId);
-        projectAccountService.deleteByProjectId(projectId);
-        documentService.deleteByProjectId(projectId);
+        log.debug("ProjectController deleteProject开始, 参数为projectId = {}", projectId);
+
+        int sqlResult1 = projectService.deleteById(projectId);
+        int sqlResult2 = projectAccountService.deleteByProjectId(projectId);
+        int sqlResult3 = documentService.deleteByProjectId(projectId);
 
         FileUtils.deleteDir(new File(FOLDER + projectId));
 
-//        // 查询该用户加入的项目
-//        List<ProjectWithPower> projectList = projectService.getProjectPowerByAccountId(accountId);
-//        request.setAttribute("project", projectList);
-
-        result.put("msg", "删除成功");
-        result.put("result", 1);
+        if (sqlResult1 >= 1 && sqlResult2 >= 1 && sqlResult3 >= 1) {
+            result.put("msg", "删除成功");
+            result.put("result", 1);
+        } else {
+            result.put("msg", "删除失败");
+            result.put("result", 0);
+        }
+        log.debug("ProjectController deleteProject结束");
         return result;
     }
 
@@ -110,10 +115,10 @@ public class ProjectController extends BaseController {
         }
         Integer projectId = Integer.parseInt(request.getParameter("pid"));
         Integer accountId = (Integer) session.getAttribute("accountId");
-        // 查询该项目下的所有文件
+        log.debug("ProjectController toProject开始, 参数为projectId = {}, accountId = {}", projectId, accountId);
+
         List<DocumentWithPower> documentList = documentService.getAllDocInfoByProjectId(projectId, 0);
-        for (int i = 0; i < documentList.size(); i++) {
-            DocumentWithPower doc = documentList.get(i);
+        for (DocumentWithPower doc : documentList) {
             if (hasPermission(projectId, accountId, doc.getDocId())) {
                 doc.setIsEdit("1");
             } else {
@@ -125,6 +130,7 @@ public class ProjectController extends BaseController {
         request.setAttribute("documents", documentList);
         session.setAttribute("projectName", project.getName());
         session.setAttribute("projectId", projectId);
+        log.debug("ProjectController toProject结束");
         return "project";
     }
 
@@ -137,10 +143,10 @@ public class ProjectController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer accountId = (Integer) session.getAttribute("accountId");
         Long docId = Long.parseLong(request.getParameter("docId"));
-        // 查询该项目下的所有文件
+        log.debug("ProjectController toSingleFolder开始, 参数为projectId = {}, accountId = {}, docId = {}", projectId, accountId, docId);
+
         List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId);
-        for (int i = 0; i < documentList.size(); i++) {
-            DocumentWithPower doc = documentList.get(i);
+        for (DocumentWithPower doc : documentList) {
             if (hasPermission(projectId, accountId, doc.getDocId())) {
                 doc.setIsEdit("1");
             } else {
@@ -150,7 +156,7 @@ public class ProjectController extends BaseController {
 
         request.setAttribute("documents", documentList);
         request.setAttribute("parentId", docId);
-        request.setAttribute("title", "流云文档");
+        log.debug("ProjectController toSingleFolder结束");
         return "single_folder";
     }
 
@@ -161,29 +167,32 @@ public class ProjectController extends BaseController {
             return "index";
         }
         Integer accountId = (Integer) session.getAttribute("accountId");
+        log.debug("ProjectController toLoginSuccess开始, 参数为 accountId = {} ", accountId);
         Account account = accountService.getById(accountId);
-        request.setAttribute("nickName", account.getNickName());
-        // 查询该用户加入的项目
+
         List<ProjectWithPower> projectList = projectService.getProjectPowerByAccountId(accountId);
+        request.setAttribute("nickName", account.getNickName());
         request.setAttribute("project", projectList);
+        log.debug("ProjectController toLoginSuccess结束");
         return "login_success";
     }
 
     @RequestMapping("/toRecycleBin")
-    public String project() {
+    public String toRecycleBin() {
         if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
         Integer projectId = Integer.parseInt(request.getParameter("pid"));
-        // 查询该项目下的所有文件
+        log.debug("ProjectController toRecycleBin开始, 参数为 projectId = {} ", projectId);
+
         List<Document> documentList = documentService.getAllDelectDocByProjectId(projectId);
 
         request.setAttribute("documents", documentList);
         session.setAttribute("projectId", projectId);
+        log.debug("ProjectController toRecycleBin结束");
         return "recycle_bin";
     }
-
 
     @RequestMapping("/renameProject")
     @ResponseBody
@@ -191,10 +200,17 @@ public class ProjectController extends BaseController {
         Map<String, Object> result = new HashMap<>();
         Integer projectId = (Integer) session.getAttribute("projectId");
         String newName = request.getParameter("newName");
+        log.debug("ProjectController projectRename开始, 参数为 projectId = {}, newName = {} ", projectId, newName);
+        int sqlResult = projectService.renameProject(projectId, newName);
+        if (sqlResult >= 1) {
+            result.put("msg", "修改成功");
+            result.put("result", 1);
+        } else {
+            result.put("msg", "修改失败");
+            result.put("result", 0);
+        }
 
-        projectService.renameProject(projectId, newName);
-        result.put("msg", "修改成功");
-        result.put("result", 1);
+        log.debug("ProjectController projectRename结束");
         return result;
     }
 
@@ -204,11 +220,13 @@ public class ProjectController extends BaseController {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
-//        Integer accountId = (Integer) session.getAttribute("accountId");
         Integer projectId = Integer.parseInt(request.getParameter("pid"));
+        log.debug("ProjectController toProjectManage开始, 参数为 projectId = {}", projectId);
+
         session.setAttribute("projectId", projectId);
         request.setAttribute("projectName", projectService.getProjectById(projectId).getName());
 
+        log.debug("ProjectController toProjectManage结束");
         return "project_manage";
     }
 
@@ -219,14 +237,16 @@ public class ProjectController extends BaseController {
         int projectId = Integer.parseInt(request.getParameter("projectId"));
         String transferMail = request.getParameter("transferMail");
         Integer accountId = (Integer) session.getAttribute("accountId");
+        log.debug("ProjectController transferProject开始, 参数为 projectId = {}, transferMail = {}, accountId = {}", projectId, transferMail, accountId);
 
-
+        // 查询该用户是否存在
         Account account = accountService.getByMail(transferMail);
         if (account == null) {
             result.put("msg", "该用户不存在或未加入该项目");
             result.put("result", 0);
             return result;
         }
+        // 查询该用户是否加入该项目
         ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, account.getId());
         if (projectAccount == null) {
             result.put("msg", "该用户不存在或未加入该项目");
@@ -234,12 +254,19 @@ public class ProjectController extends BaseController {
             return result;
         }
 
-        projectService.changeCreateAccount(projectId, account.getId());
+        int sqlResult1 = projectService.changeCreateAccount(projectId, account.getId());
 
-        // 修改projectAccount
-        projectAccountService.transferProject(projectId, accountId, account.getId());
-        result.put("msg", "转让成功");
-        result.put("result", 1);
+        // 修改projectAccount中的记录
+        int sqlResult2 = projectAccountService.transferProject(projectId, accountId, account.getId());
+        if (sqlResult1 >= 1 && sqlResult2 >= 1) {
+            result.put("msg", "转让成功");
+            result.put("result", 1);
+        } else {
+            result.put("msg", "转让失败");
+            result.put("result", 0);
+        }
+
+        log.debug("ProjectController transferProject结束");
         return result;
     }
 
@@ -258,9 +285,6 @@ public class ProjectController extends BaseController {
         }
 
         // 判断文档本身权限和账户权限
-        if (document.getPower() == 1 && "10".equals(p)) {
-            return true;
-        }
-        return false;
+        return document.getPower() == 1 && "10".equals(p);
     }
 }

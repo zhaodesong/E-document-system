@@ -2,7 +2,9 @@ package com.zhaodesong.Edocumentsystem.controller;
 
 import com.zhaodesong.Edocumentsystem.base.BaseController;
 import com.zhaodesong.Edocumentsystem.po.Document;
+import com.zhaodesong.Edocumentsystem.po.ProjectAccount;
 import com.zhaodesong.Edocumentsystem.service.DocumentService;
+import com.zhaodesong.Edocumentsystem.service.ProjectAccountService;
 import com.zhaodesong.Edocumentsystem.util.FileUtils;
 import com.zhaodesong.Edocumentsystem.vo.DocumentWithPower;
 import lombok.extern.slf4j.Slf4j;
@@ -20,22 +22,28 @@ import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 所有方法中的flag均表示是否为首页的操作，1表示为首页
+ */
 @Controller
 @Slf4j
 public class DocumentController extends BaseController {
     @Autowired
     private DocumentService documentService;
+    @Autowired
+    private ProjectAccountService projectAccountService;
 
     @RequestMapping("/upload")
     public String fileUpload(@RequestParam("file") MultipartFile file, RedirectAttributes redirectAttributes) {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long parentId = Long.parseLong(request.getParameter("parentId"));
         int flag = Integer.valueOf(request.getParameter("flag"));
+        log.debug("DocumentController fileUpload开始, 参数为 projectId = {}, parentId = {}, flag = {}", projectId, parentId, flag);
+
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "请选择要上传的文件");
             if (flag == 1) {
@@ -68,8 +76,10 @@ public class DocumentController extends BaseController {
             redirectAttributes.addFlashAttribute("msg",
                     " 文件 " + file.getOriginalFilename() + " 上传成功");
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("DocumentController fileUpload ERROR, {}", e.getMessage());
         }
+
+        log.debug("DocumentController fileUpload结束");
         if (flag == 1) {
             return "redirect:/toProject?pid=" + projectId;
         } else {
@@ -82,6 +92,7 @@ public class DocumentController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         String documentId = request.getParameter("did");
         String documentVersion = request.getParameter("dver");
+        log.debug("DocumentController fileDownload开始, 参数为 projectId = {}, documentId = {}, documentVersion = {}", projectId, documentId, documentVersion);
         //设置文件路径
         File file = new File(FOLDER + projectId + "//" + documentId + "_" + documentVersion);
         if (file.exists()) {
@@ -100,9 +111,10 @@ public class DocumentController extends BaseController {
                     i = bis.read(buffer);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                log.error("DocumentController fileDownload ERROR, {}", e.getMessage());
             }
         }
+        log.debug("DocumentController fileDownload结束");
     }
 
     @RequestMapping("/update")
@@ -111,6 +123,8 @@ public class DocumentController extends BaseController {
         Long docId = Long.parseLong(request.getParameter("docId"));
         Long parentId = Long.parseLong(request.getParameter("parentId"));
         int flag = Integer.valueOf(request.getParameter("flag"));
+        log.debug("DocumentController fileUpdate开始, 参数为 projectId = {}, docId = {}, parentId = {}, flag = {}", projectId, docId, parentId, flag);
+
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("msg", "请选择要上传的文件");
             return "redirect:/toProject?pid=" + projectId;
@@ -142,7 +156,9 @@ public class DocumentController extends BaseController {
                     " 文件 " + file.getOriginalFilename() + " 更新成功");
         } catch (IOException e) {
             e.printStackTrace();
+            log.debug("DocumentController fileUpdate ERROR, {}", e.getMessage());
         }
+        log.debug("DocumentController fileUpdate结束");
         if (flag == 1) {
             return "redirect:/toProject?pid=" + projectId;
         } else {
@@ -156,7 +172,15 @@ public class DocumentController extends BaseController {
         Map<String, Object> res = new HashMap<>();
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
+        log.debug("DocumentController fileDelete开始, 参数为 projectId = {}, docId = {}", projectId, docId);
+
         List<Document> deleteDocList = documentService.getAllDocInfoByDocId(docId, 1);
+        if (deleteDocList == null || deleteDocList.size() == 0) {
+            res.put("result", 0);
+            res.put("msg", "删除失败");
+            log.debug("DocumentController fileDelete结束");
+            return res;
+        }
         boolean isFolder = deleteDocList.get(0).getType();
         List<Document> documentList;
         if (isFolder) {
@@ -165,9 +189,9 @@ public class DocumentController extends BaseController {
             documentList = deleteDocList;
         }
 
-        for (int i = 0; i < documentList.size(); i++) {
-            documentService.deleteByDocId(documentList.get(i).getDocId());
-            String fileName = documentList.get(i).getDocId().toString() + "_" + documentList.get(i).getVersion().toString();
+        for (Document document : documentList) {
+            documentService.deleteByDocId(document.getDocId());
+            String fileName = document.getDocId().toString() + "_" + document.getVersion().toString();
             File deleteFile = new File(FOLDER + projectId + "//" + fileName);
             FileUtils.deleteDir(deleteFile);
         }
@@ -176,6 +200,8 @@ public class DocumentController extends BaseController {
         res.put("msg", "删除成功");
         res.put("docId", docId);
         res.put("projectId", projectId);
+
+        log.debug("DocumentController fileDelete结束");
         return res;
     }
 
@@ -185,7 +211,15 @@ public class DocumentController extends BaseController {
         Map<String, Object> res = new HashMap<>();
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
+        log.debug("DocumentController fileDeleteRecycle开始, 参数为 projectId = {}, docId = {}", projectId, docId);
+
         List<Document> deleteDocList = documentService.getAllDocInfoByDocId(docId, 0);
+        if (deleteDocList == null || deleteDocList.size() == 0) {
+            res.put("result", 0);
+            res.put("msg", "删除失败");
+            log.debug("DocumentController fileDeleteRecycle结束");
+            return res;
+        }
         boolean isFolder = deleteDocList.get(0).getType();
 
         if (isFolder) {
@@ -205,6 +239,7 @@ public class DocumentController extends BaseController {
         res.put("docId", docId);
         res.put("projectId", projectId);
         res.put("parentId", deleteDocList.get(0).getParentId());
+        log.debug("DocumentController fileDeleteRecycle结束");
         return res;
     }
 
@@ -214,16 +249,24 @@ public class DocumentController extends BaseController {
         Map<String, Object> res = new HashMap<>();
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
+        log.debug("DocumentController fileRecovery开始, 参数为 projectId = {}, docId = {}", projectId, docId);
+
         List<Document> recoveryDocList = documentService.getAllDocInfoByDocId(docId, 1);
+        if (recoveryDocList == null || recoveryDocList.size() == 0) {
+            res.put("result", 0);
+            res.put("msg", "删除失败");
+            log.debug("DocumentController fileDeleteRecycle结束");
+            return res;
+        }
         boolean isFolder = recoveryDocList.get(0).getType();
 
         if (isFolder) {
-            // 删除直接删除的部分
+            // 恢复直接删除的部分
             List<Document> documentList = documentService.getDeleteInfoByParentId(docId);
             for (Document document : documentList) {
                 documentService.recoveryDeleteByDocId(document.getDocId());
             }
-            // 删除间接删除的部分
+            // 恢复间接删除的部分
             for (Document document : recoveryDocList) {
                 documentService.recoveryDeleteByDocId(document.getDocId());
             }
@@ -237,32 +280,8 @@ public class DocumentController extends BaseController {
         res.put("msg", "删除成功");
         res.put("docId", docId);
         res.put("projectId", projectId);
+        log.debug("DocumentController fileRecovery结束");
         return res;
-    }
-
-    // TODO
-    @RequestMapping("/fileMove")
-    @ResponseBody
-    public Object fileMove() {
-        Map<String, Object> result = new HashMap<>();
-        Integer projectId = (Integer) session.getAttribute("projectId");
-        Long docId = Long.parseLong(request.getParameter("docId"));
-        Long parentId = Long.parseLong(request.getParameter("parentId"));
-
-        List<Document> moveDocList = documentService.getAllDocInfoByDocId(docId, 0);
-        boolean isFolder = moveDocList.get(0).getType();
-
-        if (isFolder) {
-            parentId = moveDocList.get(0).getParentId();
-            documentService.moveByDocId(docId, parentId);
-            move(docId);
-        } else {
-            documentService.moveByDocId(docId, parentId);
-
-        }
-        result.put("result", 1);
-        result.put("msg", "移动成功");
-        return result;
     }
 
     @RequestMapping("/fileCopy")
@@ -271,6 +290,8 @@ public class DocumentController extends BaseController {
         Map<String, Object> result = new HashMap<>();
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
+        log.debug("DocumentController fileCopy开始, 参数为 projectId = {}, docId = {}", projectId, docId);
+
         Document srcDoc = documentService.getLatestVersionInfo(docId);
         // 向数据库中写入该文件的记录
         Document destDoc = new Document();
@@ -284,7 +305,13 @@ public class DocumentController extends BaseController {
         destDoc.setParentId(srcDoc.getParentId());
         destDoc.setPower(srcDoc.getPower());
         destDoc.setDelFlag(srcDoc.getDelFlag());
-        documentService.insert(destDoc);
+        int sqlResult = documentService.insert(destDoc);
+        if (sqlResult == 0) {
+            result.put("result", 0);
+            result.put("msg", "创建副本失败");
+            log.debug("DocumentController fileCopy结束");
+            return result;
+        }
         File srcFile = new File(FOLDER + projectId + "//" +
                 srcDoc.getDocId().toString() + "_" + srcDoc.getVersion().toString());
         File destFile = new File(FOLDER + projectId + "//" +
@@ -292,40 +319,56 @@ public class DocumentController extends BaseController {
         try {
             FileUtils.copyFile(srcFile, destFile);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("DocumentController fileCopy ERROR {}", e.getMessage());
+            result.put("result", 0);
+            result.put("msg", "创建副本失败");
+            log.debug("DocumentController fileCopy结束");
+            return result;
         }
         result.put("result", 1);
+        result.put("msg", "创建副本成功");
         result.put("doc", destDoc);
         result.put("projectId", projectId);
         result.put("parentId", srcDoc.getParentId());
+        log.debug("DocumentController fileCopy结束");
         return result;
     }
 
-    // 文件&&文件夹重命名
     @RequestMapping("/fileRename")
     @ResponseBody
-    public Object rename() {
+    public Object fileRename() {
         Map<String, Object> result = new HashMap<>();
         String newName = request.getParameter("newName");
         String oldName = request.getParameter("oldName");
         boolean type = Boolean.parseBoolean(request.getParameter("isFolder"));
         Long docId = Long.parseLong(request.getParameter("docId"));
+        log.debug("DocumentController fileRename开始, 参数为 newName = {}, oldName = {}, type = {}, docId = {}",
+                newName, oldName, type, docId);
 
         String fullNewName = getNewName(oldName, newName, type);
-        documentService.renameByDocId(docId, fullNewName);
-
-        result.put("result", 1);
-        result.put("name", fullNewName);
+        int sqlResult = documentService.renameByDocId(docId, fullNewName);
+        if (sqlResult >= 1) {
+            result.put("result", 1);
+            result.put("msg", "重命名成功");
+            result.put("name", fullNewName);
+        } else {
+            result.put("result", 0);
+            result.put("msg", "重命名失败");
+        }
+        log.debug("DocumentController fileRename结束");
         return result;
     }
 
     @RequestMapping("/newFolder")
     @ResponseBody
-    public Object folderCreate() {
+    public Object newFolder() {
         Map<String, Object> result = new HashMap<>();
         String folderName = request.getParameter("folderName");
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long parentId = Long.parseLong(request.getParameter("parentId"));
+        log.debug("DocumentController newFolder开始, 参数为 folderName = {}, projectId = {}, parentId = {}",
+                folderName, projectId, parentId);
+
         Document document = new Document();
         document.setDocId(documentService.getMaxDocId() + 1);
         document.setProjectId(projectId);
@@ -337,54 +380,60 @@ public class DocumentController extends BaseController {
         document.setParentId(parentId);
         document.setPower(1);
         document.setDelFlag(0);
-        documentService.insert(document);
-        result.put("result", 1);
-        result.put("msg", "创建成功");
-        result.put("doc", document);
-        result.put("projectId", projectId);
-        result.put("parentId", parentId);
+        int sqlResult = documentService.insert(document);
+        if (sqlResult == 1) {
+            result.put("result", 1);
+            result.put("msg", "创建成功");
+            result.put("doc", document);
+            result.put("projectId", projectId);
+            result.put("parentId", parentId);
+        } else {
+            result.put("result", 0);
+            result.put("msg", "创建失败");
+        }
+        log.debug("DocumentController newFolder结束");
         return result;
     }
 
     @RequestMapping("/historyVersion")
-    public String getHistoryVersion() {
+    public String historyVersion() {
         Long docId = Long.parseLong(request.getParameter("docId"));
+        log.debug("DocumentController historyVersion开始, 参数为 docId = {}", docId);
         List<Document> documentList = documentService.getAllDocInfoByDocId(docId, 0);
         request.setAttribute("documentList", documentList);
+        log.debug("DocumentController historyVersion结束");
         return "history_version";
     }
 
     @RequestMapping("/changeDocPower")
     @ResponseBody
-    public Object changePermission() {
+    public Object changeDocPermission() {
         Map<String, Object> result = new HashMap<>();
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer accountId = (Integer) session.getAttribute("accountId");
         Long docId = Long.parseLong(request.getParameter("docId"));
         Integer power = Integer.parseInt(request.getParameter("power"));
+        log.debug("DocumentController changeDocPermission开始, 参数为 projectId = {}, accountId = {}, docId = {}, power = {}",
+                projectId, accountId, docId, power);
 
-        documentService.changePermission(docId, power);
-        result.put("msg", "修改成功");
-        result.put("result", 1);
+        if (!hasPermissionEditDoc(projectId, accountId)) {
+            result.put("msg", "您没有权限进行操作");
+            result.put("result", 0);
+            log.debug("DocumentController changeDocPermission结束");
+            return result;
+        }
+
+        int sqlResult = documentService.changePermission(docId, power);
+        if (sqlResult >= 1) {
+            result.put("msg", "修改成功");
+            result.put("result", 1);
+        } else {
+            result.put("msg", "修改失败");
+            result.put("result", 0);
+        }
+        log.debug("DocumentController changeDocPermission结束");
         return result;
     }
-
-    @RequestMapping("/getSingleFolder")
-    @ResponseBody
-    public Object toSingleFolder() {
-        Map<String, Object> result = new HashMap<>();
-//        Integer projectId = (Integer) session.getAttribute("projectId");
-//        Integer accountId = (Integer) session.getAttribute("accountId");
-        Long docId = Long.parseLong(request.getParameter("docId"));
-        // 查询该项目下的所有文件
-        List<DocumentWithPower> documentList = documentService.getAllDocInfoByParentId(docId);
-
-        result.put("documents", documentList);
-        result.put("parentId", docId);
-        result.put("result", 1);
-        return result;
-    }
-
 
     private String getCopyName(String fileName) {
         int index = fileName.indexOf('.');
@@ -415,5 +464,11 @@ public class DocumentController extends BaseController {
                 documentService.moveByDocId(document.getDocId(), parentId);
             }
         }
+    }
+
+    private boolean hasPermissionEditDoc(Integer projectId, Integer accountId) {
+        ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, accountId);
+        String p = projectAccount.getPermission();
+        return "10".equals(p) || "11".equals(p);
     }
 }

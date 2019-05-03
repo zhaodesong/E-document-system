@@ -33,15 +33,11 @@ public class ProjectAccountController extends BaseController {
     @ResponseBody
     public Object inviteMember() {
         Map<String, Object> result = new HashMap<>();
-
         Integer accountId = (Integer) session.getAttribute("accountId");
         Integer projectId = (Integer) session.getAttribute("projectId");
         String inviteMail = request.getParameter("inviteMail");
-        if (!hasPermissionEditAccount(projectId, accountId)) {
-            result.put("msg", "您没有操作权限");
-            result.put("result", 0);
-            return result;
-        }
+        log.debug("ProjectAccountController inviteMember开始, 参数为accountId = {}, projectId = {}, inviteMail = {}", accountId, projectId, inviteMail);
+
         Account account = accountService.getByMail(inviteMail);
         if (account == null) {
             result.put("msg", "该用户不存在");
@@ -55,20 +51,27 @@ public class ProjectAccountController extends BaseController {
             result.put("result", 0);
             return result;
         }
+
         ProjectAccount insertAccount = new ProjectAccount();
         insertAccount.setAccountId(account.getId());
         insertAccount.setProjectId(projectId);
         insertAccount.setPermission("10");
-        projectAccountService.insert(insertAccount);
+        int sqlResult = projectAccountService.insert(insertAccount);
+        if (sqlResult == 1) {
+            AccountForManage acc = new AccountForManage();
+            acc.setId(account.getId());
+            acc.setMail(inviteMail);
+            acc.setNickName(account.getNickName());
+            acc.setPower("10");
+            result.put("member", acc);
+            result.put("msg", "添加新成员成功");
+            result.put("result", 1);
+        } else {
+            result.put("msg", "添加新成员失败");
+            result.put("result", 0);
+        }
 
-        AccountForManage acc = new AccountForManage();
-        acc.setId(account.getId());
-        acc.setMail(inviteMail);
-        acc.setNickName(account.getNickName());
-        acc.setPower("00");
-        result.put("member", acc);
-        result.put("msg", "添加新成员成功");
-        result.put("result", 1);
+        log.debug("ProjectAccountController inviteMember结束");
         return result;
     }
 
@@ -81,13 +84,18 @@ public class ProjectAccountController extends BaseController {
         Integer accountId = (Integer) session.getAttribute("accountId");
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer deleteId = Integer.parseInt(request.getParameter("deleteId"));
-        System.out.println("ProjectAccountController:85     projectId=" + projectId + ",accountId=" + accountId + ",deleteId=" + deleteId);
+        log.debug("ProjectAccountController deleteMember开始, 参数为accountId = {}, projectId = {}, deleteId = {}", accountId, projectId, deleteId);
         if (hasPermissionEditAccount(projectId, accountId)) {
-            projectAccountService.deleteByProjectIdAndAccountId(projectId, deleteId);
-            request.setAttribute("msg", "移除成功");
-            return "redirect:/toAccountManage?pid=" + projectId;
+            int sqlResult = projectAccountService.deleteByProjectIdAndAccountId(projectId, deleteId);
+            if (sqlResult >= 1) {
+                request.setAttribute("msg", "移除成功");
+            } else {
+                request.setAttribute("msg", "移除失败");
+            }
+        } else {
+            request.setAttribute("msg", "您没有权限操作，移除失败");
         }
-        request.setAttribute("msg", "您没有操作权限");
+        log.debug("ProjectAccountController deleteMember结束");
         return "redirect:/toAccountManage?pid=" + projectId;
     }
 
@@ -100,6 +108,7 @@ public class ProjectAccountController extends BaseController {
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer changeId = Integer.parseInt(request.getParameter("changeId"));
         String p = request.getParameter("permission");
+        log.debug("ProjectAccountController changePermissionAccount开始, 参数为accountId = {}, projectId = {}, changeId = {}, p = {}", accountId, projectId, changeId, p);
         if (!"00".equals(p) && !"10".equals(p) && !"11".equals(p)) {
             result.put("msg", "参数错误");
             result.put("result", 0);
@@ -111,18 +120,22 @@ public class ProjectAccountController extends BaseController {
             pa.setProjectId(projectId);
             pa.setAccountId(changeId);
             pa.setPermission(p);
-            projectAccountService.updatePermission(pa);
+            int sqlResult = projectAccountService.updatePermission(pa);
+            if (sqlResult >= 1) {
+                request.setAttribute("msg", "修改成功");
+                result.put("result", 1);
+            } else {
+                request.setAttribute("msg", "修改失败");
+                result.put("result", 0);
+            }
+        } else {
+            request.setAttribute("msg", "您没有操作权限，修改失败");
+            result.put("result", 0);
         }
-        result.put("msg", "修改成功");
-        result.put("result", 1);
+        log.debug("ProjectAccountController changePermissionAccount结束");
         return result;
     }
 
-    /**
-     * 项目创建者以及当前登陆者的信息不能修改，因此不显示
-     *
-     * @return
-     */
     @RequestMapping("toAccountManage")
     public String toAccountManage() {
         if (sessionCheck()) {
@@ -131,21 +144,25 @@ public class ProjectAccountController extends BaseController {
         }
         Integer accountId = (Integer) session.getAttribute("accountId");
         Integer projectId = Integer.parseInt(request.getParameter("pid"));
+
+        log.debug("ProjectAccountController toAccountManage开始, 参数为accountId = {}, projectId = {}", accountId, projectId);
         session.setAttribute("projectId", projectId);
 
-        if (!hasPermissionEditAccount(projectId, accountId)) {
-            request.setAttribute("msg", "您无权访问该页面");
-            return "redirect:/toLoginSuccess";
-        }
-
         List<AccountForManage> accountList = accountService.getAccountForManage(projectId);
+        if (accountList == null || accountList.size() == 0) {
+            request.setAttribute("msg", "系统错误，请稍后重试");
+            return "account_manage";
+        }
+        // 项目创建者以及当前登陆者的信息不能修改，因此不显示
         Integer createId = projectService.getProjectById(projectId).getCreateAccount();
+        // 去掉登录者的信息
         for (int i = 0; i < accountList.size(); i++) {
             if (accountList.get(i).getId().equals(accountId)) {
                 accountList.remove(i);
                 break;
             }
         }
+        // 去掉创建者的信息
         for (int i = 0; i < accountList.size(); i++) {
             if (accountList.get(i).getId().equals(createId)) {
                 accountList.remove(i);
@@ -153,28 +170,31 @@ public class ProjectAccountController extends BaseController {
             }
         }
         request.setAttribute("accountList", accountList);
+        log.debug("ProjectAccountController toAccountManage结束");
         return "account_manage";
     }
 
     @RequestMapping(value = "/quitProject")
-    public String deleteProject() {
+    public String quitProject() {
         if (sessionCheck()) {
             request.setAttribute("msg", "登录失效，请重新登录");
             return "index";
         }
-
         int projectId = Integer.parseInt(request.getParameter("pid"));
         Integer accountId = (Integer) session.getAttribute("accountId");
+        log.debug("ProjectAccountController quitProject开始, 参数为accountId = {}, projectId = {}", accountId, projectId);
 
-        projectAccountService.deleteByProjectIdAndAccountId(projectId, accountId);
+        int sqlResult = projectAccountService.deleteByProjectIdAndAccountId(projectId, accountId);
+        if (sqlResult == 0) {
+            request.setAttribute("msg", "系统错误，退出失败");
+            return "login_success";
+        }
 
-
-        // 查询该用户加入的项目
         List<ProjectWithPower> projectList = projectService.getProjectPowerByAccountId(accountId);
         request.setAttribute("project", projectList);
+        log.debug("ProjectAccountController quitProject结束");
         return "login_success";
     }
-
 
     private boolean hasPermissionEditAccount(Integer projectId, Integer accountId) {
         Project project = projectService.getProjectById(projectId);
@@ -185,11 +205,5 @@ public class ProjectAccountController extends BaseController {
         ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, accountId);
         String p = projectAccount.getPermission();
         return "11".equals(p);
-    }
-
-    private boolean hasPermissionEditDoc(Integer projectId, Integer accountId) {
-        ProjectAccount projectAccount = projectAccountService.getByProjectIdAndAccountId(projectId, accountId);
-        String p = projectAccount.getPermission();
-        return "10".equals(p) || "11".equals(p);
     }
 }

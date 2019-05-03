@@ -45,6 +45,7 @@ public class AccountController extends BaseController {
     public String login() {
         String mail = request.getParameter("mail");
         String password = request.getParameter("password");
+        log.debug("AccountController login开始, 参数为mail = {}, password = {}", mail, password);
 
         if (StringUtils.isEmpty(mail) || StringUtils.isEmpty(password)) {
             request.setAttribute("msg", "输入不能为空，请重新输入");
@@ -64,6 +65,8 @@ public class AccountController extends BaseController {
         // 查询该用户加入的项目
         List<ProjectWithPower> projectList = projectService.getProjectPowerByAccountId(account.getId());
         request.setAttribute("project", projectList);
+
+        log.debug("AccountController login结束");
         return "login_success";
     }
 
@@ -72,6 +75,7 @@ public class AccountController extends BaseController {
         String mail = request.getParameter("mail");
         String password = request.getParameter("password");
         String nickName = request.getParameter("nickName");
+        log.debug("AccountController register开始, 参数为mail = {}, password = {}, nickName = {}", mail, password, nickName);
 
         if (StringUtils.isEmpty(mail) || StringUtils.isEmpty(password)
                 || StringUtils.isEmpty(nickName)) {
@@ -90,6 +94,7 @@ public class AccountController extends BaseController {
             return "index";
         }
         request.setAttribute("msg", "注册失败,请稍后重试");
+        log.debug("AccountController register结束");
         return "register";
     }
 
@@ -102,18 +107,24 @@ public class AccountController extends BaseController {
     @RequestMapping("/changeNickName")
     @ResponseBody
     public Object changeNickName() {
-
         Map<String, Object> result = new HashMap<>();
         Integer accountId = (Integer) session.getAttribute("accountId");
         String newName = request.getParameter("nickName");
+        log.debug("AccountController register开始, 参数为accountId = {}, newName = {}", accountId, newName);
 
         Account account = new Account();
         account.setId(accountId);
         account.setNickName(newName);
-        accountService.updateById(account);
-        session.setAttribute("nickName", newName);
-        result.put("msg", "修改成功");
-        result.put("result", 1);
+        int sqlResult = accountService.updateById(account);
+        if (sqlResult == 1) {
+            session.setAttribute("nickName", newName);
+            result.put("msg", "修改成功");
+            result.put("result", 1);
+        } else {
+            result.put("msg", "修改失败");
+            result.put("result", 0);
+        }
+        log.debug("AccountController changeNickName结束");
         return result;
     }
 
@@ -125,6 +136,7 @@ public class AccountController extends BaseController {
         Integer accountId = (Integer) session.getAttribute("accountId");
         String oldPwd = request.getParameter("oldPwd");
         String newPwd = request.getParameter("newPwd");
+        log.debug("AccountController changePassword开始, 参数为accountId = {}, oldPwd = {}, newPwd = {}", accountId, oldPwd, newPwd);
 
         Account acc = accountService.getById(accountId);
         if (!acc.getPassword().equals(DigestUtils.md5DigestAsHex(oldPwd.getBytes()).toLowerCase())) {
@@ -135,9 +147,15 @@ public class AccountController extends BaseController {
         Account account = new Account();
         account.setId(accountId);
         account.setPassword(DigestUtils.md5DigestAsHex(newPwd.getBytes()));
-        accountService.updateById(account);
-        result.put("msg", "修改成功");
-        result.put("result", 1);
+        int sqlResult = accountService.updateById(account);
+        if (sqlResult == 1) {
+            result.put("msg", "修改成功");
+            result.put("result", 1);
+        } else {
+            result.put("msg", "修改失败");
+            result.put("result", 0);
+        }
+        log.debug("AccountController changePwd结束");
         return result;
     }
 

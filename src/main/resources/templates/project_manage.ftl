@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>项目管理</title>
+    <title>项目管理 - 流云文档</title>
     <link rel="stylesheet" type="text/css" href="/css/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="/css/icon.min.css">
     <script src="/js/jquery.min.js"></script>
