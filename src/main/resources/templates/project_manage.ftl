@@ -69,6 +69,9 @@
                 if (data.result === 1) {
                     alert("转让成功");
                     window.open("/toLoginSuccess", "_self");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }
@@ -93,6 +96,9 @@
             success: function (data) {
                 if (data.result === 1) {
                     alert("项目名称修改成功！");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }
@@ -115,6 +121,9 @@
                 if (data.result === 1) {
                     alert("删除成功");
                     window.open("/toLoginSuccess", "_self");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }

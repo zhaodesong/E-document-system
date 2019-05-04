@@ -108,6 +108,11 @@ public class AccountController extends BaseController {
     @ResponseBody
     public Object changeNickName() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         Integer accountId = (Integer) session.getAttribute("accountId");
         String newName = request.getParameter("nickName");
         log.debug("AccountController register开始, 参数为accountId = {}, newName = {}", accountId, newName);
@@ -133,6 +138,11 @@ public class AccountController extends BaseController {
     @ResponseBody
     public Object changePassword() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         Integer accountId = (Integer) session.getAttribute("accountId");
         String oldPwd = request.getParameter("oldPwd");
         String newPwd = request.getParameter("newPwd");

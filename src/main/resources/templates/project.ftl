@@ -264,6 +264,9 @@
                     $('#' + data.docId).remove();
                     alert("删除成功");
                     window.open("/toProject?pid=" + data.projectId, "_self");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }
@@ -335,6 +338,9 @@
                     // selectedBtn.closest('.doc').after(copyDiv);
                     alert("创建副本成功");
                     window.open("toProject?pid=" + data.projectId, "_self");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }
@@ -361,13 +367,9 @@
         } else {
             $('#inputName').val('');
         }
-        $('.small.modal')
-            .modal('show')
-        ;
+        $('.small.modal').modal('show');
     });
-    $('.ui.dropdown')
-        .dropdown()
-    ;
+    $('.ui.dropdown').dropdown();
 
     var selectedBtn;
     $('#confirm').on('click', function () {
@@ -386,6 +388,9 @@
                     if (data.result === 1) {
                         selectedBtn.closest('.doc').find('.docName').html(data.name);
                         alert("重命名成功");
+                    } else if (data.result === -1) {
+                        alert(data.msg);
+                        window.open("/", "_self");
                     } else {
                         alert(data.msg);
                     }
@@ -429,6 +434,9 @@
                         //     "</div>";
                         alert("创建成功");
                         window.open("toProject?pid=" + data.projectId, "_self");
+                    } else if (data.result === -1) {
+                        alert(data.msg);
+                        window.open("/", "_self");
                     } else {
                         alert(data.msg);
                     }
@@ -458,6 +466,9 @@
                     $(".isEditItem").removeClass("active");
                     clickId.addClass("active");
                     alert("修改权限成功");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }

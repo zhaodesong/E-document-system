@@ -170,6 +170,11 @@ public class DocumentController extends BaseController {
     @ResponseBody
     public Object fileDelete() {
         Map<String, Object> res = new HashMap<>();
+        if (sessionCheck()) {
+            res.put("msg", "登录失效，请重新登录");
+            res.put("result", -1);
+            return res;
+        }
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
         log.debug("DocumentController fileDelete开始, 参数为 projectId = {}, docId = {}", projectId, docId);
@@ -209,6 +214,11 @@ public class DocumentController extends BaseController {
     @ResponseBody
     public Object fileDeleteRecycle() {
         Map<String, Object> res = new HashMap<>();
+        if (sessionCheck()) {
+            res.put("msg", "登录失效，请重新登录");
+            res.put("result", -1);
+            return res;
+        }
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
         log.debug("DocumentController fileDeleteRecycle开始, 参数为 projectId = {}, docId = {}", projectId, docId);
@@ -247,6 +257,11 @@ public class DocumentController extends BaseController {
     @ResponseBody
     public Object fileRecovery() {
         Map<String, Object> res = new HashMap<>();
+        if (sessionCheck()) {
+            res.put("msg", "登录失效，请重新登录");
+            res.put("result", -1);
+            return res;
+        }
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
         log.debug("DocumentController fileRecovery开始, 参数为 projectId = {}, docId = {}", projectId, docId);
@@ -288,6 +303,11 @@ public class DocumentController extends BaseController {
     @ResponseBody
     public Object fileCopy() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long docId = Long.parseLong(request.getParameter("docId"));
         log.debug("DocumentController fileCopy开始, 参数为 projectId = {}, docId = {}", projectId, docId);
@@ -338,6 +358,11 @@ public class DocumentController extends BaseController {
     @ResponseBody
     public Object fileRename() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         String newName = request.getParameter("newName");
         String oldName = request.getParameter("oldName");
         boolean type = Boolean.parseBoolean(request.getParameter("isFolder"));
@@ -363,6 +388,11 @@ public class DocumentController extends BaseController {
     @ResponseBody
     public Object newFolder() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         String folderName = request.getParameter("folderName");
         Integer projectId = (Integer) session.getAttribute("projectId");
         Long parentId = Long.parseLong(request.getParameter("parentId"));
@@ -409,6 +439,11 @@ public class DocumentController extends BaseController {
     @ResponseBody
     public Object changeDocPermission() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer accountId = (Integer) session.getAttribute("accountId");
         Long docId = Long.parseLong(request.getParameter("docId"));

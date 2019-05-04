@@ -42,6 +42,11 @@ public class ProjectController extends BaseController {
     @ResponseBody
     public Object createProject() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         Integer accountId = (Integer) session.getAttribute("accountId");
         String name = request.getParameter("projectName");
         log.debug("ProjectController createProject开始, 参数为accountId = {}, name = {}", accountId, name);
@@ -87,6 +92,11 @@ public class ProjectController extends BaseController {
     @ResponseBody
     public Object deleteProject() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         int projectId = Integer.parseInt(request.getParameter("pid"));
         log.debug("ProjectController deleteProject开始, 参数为projectId = {}", projectId);
 
@@ -198,6 +208,11 @@ public class ProjectController extends BaseController {
     @ResponseBody
     public Object projectRename() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         Integer projectId = (Integer) session.getAttribute("projectId");
         String newName = request.getParameter("newName");
         log.debug("ProjectController projectRename开始, 参数为 projectId = {}, newName = {} ", projectId, newName);
@@ -234,6 +249,11 @@ public class ProjectController extends BaseController {
     @ResponseBody
     public Object transferProject() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         int projectId = Integer.parseInt(request.getParameter("projectId"));
         String transferMail = request.getParameter("transferMail");
         Integer accountId = (Integer) session.getAttribute("accountId");

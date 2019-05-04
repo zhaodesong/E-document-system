@@ -137,6 +137,9 @@
                     $('#' + data.docId).remove();
                     alert("彻底删除成功");
                     window.open("/toRecycleBin?pid=" + data.projectId, "_self");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }
@@ -159,6 +162,9 @@
                     $('#' + data.docId).remove();
                     alert("恢复文件成功");
                     window.open("/toRecycleBin?pid=" + data.projectId, "_self");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }

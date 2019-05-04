@@ -114,6 +114,9 @@
             success: function (data) {
                 if (data.result === 1) {
                     alert("权限修改成功");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }
@@ -150,9 +153,9 @@
                         "<a href='deleteMember?deleteId=" + data.member.id + "'>删除该成员</a>" +
                         "</button>" +
                         "<select class='ui dropdown' id='" + data.member.id + "'>";
-                    if(data.member.power === "00"){
+                    if (data.member.power === "00") {
                         newMemberDivStr = newMemberDivStr + "<option value='00' selected>仅下载</option>";
-                    } else if(data.member.power === "10"){
+                    } else if (data.member.power === "10") {
                         newMemberDivStr = newMemberDivStr + "<option value='10' selected>可编辑</option>";
                     } else {
                         newMemberDivStr = newMemberDivStr + "<option value='11' selected>管理员</option>";
@@ -163,6 +166,9 @@
                         "</div>";
                     var newMemberDiv = $(newMemberDivStr);
                     $('.memberList').append(newMemberDiv);
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }

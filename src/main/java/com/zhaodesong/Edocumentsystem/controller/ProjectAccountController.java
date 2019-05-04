@@ -33,6 +33,11 @@ public class ProjectAccountController extends BaseController {
     @ResponseBody
     public Object inviteMember() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         Integer accountId = (Integer) session.getAttribute("accountId");
         Integer projectId = (Integer) session.getAttribute("projectId");
         String inviteMail = request.getParameter("inviteMail");
@@ -104,6 +109,11 @@ public class ProjectAccountController extends BaseController {
     @ResponseBody
     public Object changePermissionAccount() {
         Map<String, Object> result = new HashMap<>();
+        if (sessionCheck()) {
+            result.put("msg", "登录失效，请重新登录");
+            result.put("result", -1);
+            return result;
+        }
         Integer accountId = (Integer) session.getAttribute("accountId");
         Integer projectId = (Integer) session.getAttribute("projectId");
         Integer changeId = Integer.parseInt(request.getParameter("changeId"));

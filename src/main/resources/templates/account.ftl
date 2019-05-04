@@ -108,6 +108,9 @@
             success: function (data) {
                 if (data.result === 1) {
                     alert("昵称修改成功！");
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }
@@ -143,7 +146,10 @@
                 if (data.result === 1) {
                     alert("密码修改成功,请重新登录");
                     window.open("/", "_self");
-                } else {
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
+                }else {
                     alert(data.msg);
                 }
             }

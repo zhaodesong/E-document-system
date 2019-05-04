@@ -160,6 +160,9 @@
                         "</div>";
                     $('#noItem').remove();
                     $('.projectlist').append(newProjectDiv);
+                } else if (data.result === -1) {
+                    alert(data.msg);
+                    window.open("/", "_self");
                 } else {
                     alert(data.msg);
                 }
