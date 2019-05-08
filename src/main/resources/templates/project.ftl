@@ -135,7 +135,7 @@
                                                 </div>
                                             </#if>
                                             <div class="center aligned">
-                                                <img src="/img/folder.png">
+                                                <img src="/images/folde.png"  alt="文件夹"/>
                                             </div>
                                             <div class="center aligned">
                                                 <a href="/toSingleFolder?docId=${doc.docId!}"
@@ -188,7 +188,7 @@
                                             </div>
                                         </div>
                                         <div class="center aligned">
-                                            <img src="/img/file.png">
+                                            <img src="/images/file.png" alt="文件" />
                                         </div>
                                         <div class="center aligned" style="max-height: available">
                                             <a class="center aligned header docName">${doc.name}</a>

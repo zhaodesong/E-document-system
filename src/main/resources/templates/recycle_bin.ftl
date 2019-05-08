@@ -97,7 +97,11 @@
                                         </div>
                                     </div>
                                     <div class="center aligned">
-                                        <img src="/img/file.png">
+                                        <#if doc.type = false>
+                                        <img src="/images/file.png" alt="文件" />
+                                        <#else>
+                                        <img src="/images/folde.png" alt="文件夹" />
+                                        </#if>
                                     </div>
                                     <div class="center aligned" style="max-height: available">
                                         <a class="center aligned header docName">${doc.name}</a>

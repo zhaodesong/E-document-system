@@ -114,7 +114,7 @@
                 } else {
                     alert(data.msg);
                 }
-            }
+            },
             error: function (err) {
                 alert("系统错误，请稍后重试");
                 console.log(err);
@@ -152,7 +152,7 @@
                 }else {
                     alert(data.msg);
                 }
-            }
+            },
             error: function (err) {
                 alert("系统错误，请稍后重试");
                 console.log(err);
