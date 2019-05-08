@@ -62,6 +62,7 @@
                                             <a href="/toProjectManage?pid=${p.id}" class="accountManage">项目管理</a>
                                         <#elseif p.power! = "11">
                                             <a href="/toAccountManage?pid=${p.id}" class="accountManage">成员管理</a>
+                                            <a href="/quitProject?pid=${p.id}" class="quitProject">退出该项目</a>
                                         <#else>
                                             <a href="/quitProject?pid=${p.id}" class="quitProject">退出该项目</a>
                                         </#if>
