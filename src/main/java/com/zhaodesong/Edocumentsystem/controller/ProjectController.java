@@ -239,7 +239,8 @@ public class ProjectController extends BaseController {
         log.debug("ProjectController toProjectManage开始, 参数为 projectId = {}", projectId);
 
         session.setAttribute("projectId", projectId);
-        request.setAttribute("projectName", projectService.getProjectById(projectId).getName());
+        String projectName = projectService.getProjectById(projectId).getName();
+        request.setAttribute("projectName", projectName);
 
         log.debug("ProjectController toProjectManage结束");
         return "project_manage";

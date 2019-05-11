@@ -22,8 +22,6 @@ public class AccountQuery implements Serializable {
 
     private String nickName;
 
-    private Boolean verifyFlag;
-
     private LocalDateTime createTimeStart;
 
     private LocalDateTime createTimeEnd;

@@ -62,7 +62,6 @@ public class AccountController extends BaseController {
         session.setAttribute("mail", mail);
         session.setAttribute("accountId", account.getId());
 
-        // 查询该用户加入的项目
         List<ProjectWithPower> projectList = projectService.getProjectPowerByAccountId(account.getId());
         request.setAttribute("project", projectList);
 
@@ -87,7 +86,6 @@ public class AccountController extends BaseController {
         account.setMail(mail);
         account.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()).toLowerCase());
         account.setNickName(nickName);
-        account.setVerifyFlag(false);
 
         if (accountService.insert(account) == 1) {
             request.setAttribute("msg", "注册成功,请登录");

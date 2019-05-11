@@ -23,7 +23,6 @@ public interface AccountDao {
             + "<if test='mail != null'>AND mail = #{mail}</if>"
             + "<if test='password !=null'>AND password = #{password}</if>"
             + "<if test='nickName !=null'>AND nick_name = #{nickName}</if>"
-            + "<if test='verifyFlag !=null'>AND verify_flag = #{verifyFlag}</if>"
             + "<if test='createTimeStart !=null'>AND create_time &gt; #{createTimeStart}</if>"
             + "<if test='createTimeEnd !=null'>AND create_time &lt; #{createTimeEnd}</if>"
             + "<if test='updateTimeStart !=null'>AND create_time &gt; #{updateTimeStart}</if>"
@@ -38,8 +37,8 @@ public interface AccountDao {
     @Select("SELECT account.id,mail,nick_name,permission as power FROM account,project_account WHERE project_id=#{projectId} AND account.id = account_id")
     List<AccountForManage> getAccountForManage(Integer projectId);
 
-    @Insert("INSERT INTO account(id,mail,password,nick_name,verify_flag,create_time,update_time) " +
-            "VALUES (#{id}, #{mail}, #{password}, #{nickName}, #{verifyFlag}, #{createTime}, #{updateTime})")
+    @Insert("INSERT INTO account(id,mail,password,nick_name,create_time,update_time) " +
+            "VALUES (#{id}, #{mail}, #{password}, #{nickName}, #{createTime}, #{updateTime})")
     @Options(useGeneratedKeys = true, keyColumn = "id", keyProperty = "id")
     int insert(Account account);
 
@@ -52,7 +51,6 @@ public interface AccountDao {
             + "<if test='mail != null'>mail = #{mail}</if>"
             + "<if test='password !=null'>password = #{password}</if>"
             + "<if test='nickName !=null'>nick_name = #{nickName}</if>"
-            + "<if test='verifyFlag !=null'>verify_flag = #{verifyFlag}</if>"
             + "</set>"
             + "WHERE id = #{id}"
             + "</script>")

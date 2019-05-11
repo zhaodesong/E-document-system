@@ -42,7 +42,6 @@ public class ApplicationTests {
 		account.setMail("test@gmail.com");
 		account.setPassword("C4CA4238A0B923820DCC509A6F75849B");
 		account.setNickName("测试");
-		account.setVerifyFlag(true);
 		account.setCreateTime(LocalDateTime.now());
 		account.setUpdateTime(LocalDateTime.now());
 
@@ -55,7 +54,6 @@ public class ApplicationTests {
 	public void testUpdateById() {
 		Account account = new Account();
 		account.setId(8);
-		account.setVerifyFlag(false);
 
 		int success = accountService.updateById(account);
 

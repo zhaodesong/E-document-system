@@ -92,8 +92,8 @@
                                     <div class="opt fright">
                                         <span class="tip">•••</span>
                                         <div class="operation hide menu">
-                                            <a href="#" class="recoveryFile">恢复文件</a>
-                                            <a href="#" class="deleteFile">彻底删除</a>
+                                            <a href="#" class="recoveryFile"><i class="undo icon"></i>恢复文件</a>
+                                            <a href="#" class="deleteFile"><i class="delete icon"></i>彻底删除</a>
                                         </div>
                                     </div>
                                     <div class="center aligned">

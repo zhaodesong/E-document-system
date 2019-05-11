@@ -22,8 +22,6 @@ public class Account implements Serializable {
 
     private String nickName;
 
-    private Boolean verifyFlag;
-
     private LocalDateTime createTime;
 
     private LocalDateTime updateTime;

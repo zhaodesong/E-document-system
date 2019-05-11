@@ -27,6 +27,11 @@
 <#include "common/header.ftl" parse=true encoding='utf-8'>
 <div class="ui grid" style="margin-top: 10px;margin-bottom: 10px">
     <div class="two wide column" style="position: relative">
+        <div class="ui secondary vertical labeled icon menu" style="position: fixed;">
+            <div style="margin: 3vw;">
+                <a class="item" href="/toLoginSuccess"><i class="desktop icon"></i>返回工作台</a>
+            </div>
+        </div>
     </div>
     <div class="twelve wide column">
         <div class="ui container">
@@ -65,14 +70,13 @@
                 </#list>
             </div>
         </div>
+    </div>
+    <div class="two wide column" style="position: relative">
         <div class="ui left" style="margin-top: 20px;text-align: left;">
             <button id="showModal" class="ui button">
                 邀请新成员
             </button>
         </div>
-    </div>
-    <div class="two wide column" style="position: relative">
-
     </div>
 
 
