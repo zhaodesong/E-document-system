@@ -73,12 +73,21 @@ public class AccountController extends BaseController {
     public String register() {
         String mail = request.getParameter("mail");
         String password = request.getParameter("password");
+        String password2 = request.getParameter("password2");
         String nickName = request.getParameter("nickName");
         log.debug("AccountController register开始, 参数为mail = {}, password = {}, nickName = {}", mail, password, nickName);
 
         if (StringUtils.isEmpty(mail) || StringUtils.isEmpty(password)
                 || StringUtils.isEmpty(nickName)) {
             request.setAttribute("msg", "输入不能为空，请重新输入");
+            return "register";
+        }
+        if (!mail.contains("@")) {
+            request.setAttribute("msg", "邮箱格式不正确，请重新输入");
+            return "register";
+        }
+        if (!StringUtils.equals(password, password2)) {
+            request.setAttribute("msg", "两次密码输入不一致，请重新输入");
             return "register";
         }
 
