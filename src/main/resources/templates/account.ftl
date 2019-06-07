@@ -61,15 +61,15 @@
                     </div>
                     <div class="content">
                         <div class="ui segment">
-                            <div class="ui input">
+                            <div class="ui input" style="width: 100%;">
                                 <input type="password" placeholder="输入原密码" id="oldPwd">
                             </div>
                             </br>
-                            <div class="ui input">
+                            <div class="ui input"  style="width: 100%;">
                                 <input type="password" placeholder="输入新密码" id="newPwd">
                             </div>
                             </br>
-                            <div class="ui input">
+                            <div class="ui input"  style="width: 100%;">
                                 <input type="password" placeholder="再次输入新密码" id="newPwd2">
                             </div>
                         </div>

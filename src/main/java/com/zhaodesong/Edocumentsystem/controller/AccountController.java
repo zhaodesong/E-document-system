@@ -91,6 +91,12 @@ public class AccountController extends BaseController {
             return "register";
         }
 
+        Account account1 = accountService.getByMail(mail);
+        if (account1 != null) {
+            request.setAttribute("msg", "该邮箱已注册");
+            return "register";
+        }
+
         Account account = new Account();
         account.setMail(mail);
         account.setPassword(DigestUtils.md5DigestAsHex(password.getBytes()).toLowerCase());

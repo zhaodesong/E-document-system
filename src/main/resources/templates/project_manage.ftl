@@ -43,7 +43,7 @@
             <div class="ui divider"></div>
             <div style="margin-top: 40px;height: 150px;">
                 <h2 class="ui header">
-                    关闭项目
+                    删除项目
                     <div class="sub header">所有文件将会一并被删除，请谨慎操作</div>
                 </h2>
                 <button class="ui button" id="deleteProject">我已知晓后果，确认删除</button>

@@ -43,6 +43,11 @@ public class ProjectAccountController extends BaseController {
         String inviteMail = request.getParameter("inviteMail");
         log.debug("ProjectAccountController inviteMember开始, 参数为accountId = {}, projectId = {}, inviteMail = {}", accountId, projectId, inviteMail);
 
+        if (!hasPermissionEditAccount(projectId, accountId)) {
+            result.put("msg", "您没有权限操作，邀请失败");
+            result.put("result", 0);
+        }
+
         Account account = accountService.getByMail(inviteMail);
         if (account == null) {
             result.put("msg", "该用户不存在");

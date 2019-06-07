@@ -58,7 +58,7 @@
                         </div>
                         <div class="content">
                             <button class="ui button">
-                                <a href="deleteMember?deleteId=${a.id}">删除该成员</a>
+                                <a href="deleteMember?deleteId=${a.id}">移除该成员</a>
                             </button>
                             <select class="ui dropdown" id="${a.id}">
                                 <option value="00" <#if a.power="00">selected</#if>>仅下载</option>

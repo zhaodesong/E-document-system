@@ -105,7 +105,7 @@
 
 <div class="ui small modal">
     <div class="ui icon header">
-        请输入名称
+        请输入项目名称
     </div>
     <div class="content">
         <div class="ui inverted segment" style="background-color: #f1f1f1">
